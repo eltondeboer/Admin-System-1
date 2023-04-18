@@ -2,8 +2,6 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.KeyAdapter;
-import java.awt.event.KeyEvent;
 
 public class Admin_controll extends JDialog{
     private JButton view_loans_btn;
@@ -35,6 +33,27 @@ public class Admin_controll extends JDialog{
     private JPanel Searchbar;
     private JButton search_btn;
     private JPanel HomePage;
+    private JButton reg_new_user_btn;
+    private JPanel reg_user;
+    private JTable table1;
+    private JTextField textField2;
+    private JButton return_item_btn;
+    private JTextField textField3;
+    private JButton loan_item_btn;
+    private JTextField textField4;
+    private JTable table2;
+    private JButton deleteSelectedButton;
+    private JButton pushEditsButton;
+    private JPanel Reserve_item;
+    private JPanel Recipt_of_loan;
+    private JTable table3;
+    private JLabel SR_for_label;
+    private JTable table4;
+    private JTable table5;
+    private JButton reserveSelectedButton;
+    private JButton button1;
+    private JTextField textField5;
+    private JButton button2;
 
 
     public void signed_out_state() {
@@ -46,6 +65,8 @@ public class Admin_controll extends JDialog{
         manage_btn.setVisible(false);
         all_late_btn.setVisible(false);
         Admin_actions_label.setVisible(false);
+        tfEmail.setText("");
+        pfPassword.setText("");
     }
     public void signed_in_state(User user) {
 
@@ -169,6 +190,30 @@ public class Admin_controll extends JDialog{
                 } else {
                     pfPassword.setEchoChar('*');
                 }
+            }
+        });
+        loan_btn.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                tabbedPane1.setSelectedIndex(3);
+            }
+        });
+        reserveItem_btn.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                tabbedPane1.setSelectedIndex(11);
+            }
+        });
+        manage_btn.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                tabbedPane1.setSelectedIndex(4);
+            }
+        });
+        all_late_btn.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                tabbedPane1.setSelectedIndex(5);
             }
         });
         setVisible(true);
