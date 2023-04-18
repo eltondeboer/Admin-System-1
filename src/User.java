@@ -56,6 +56,14 @@ public class User {
         usertype = null;
         signed_in = false;
     }
+    public boolean user_is_admin(){
+        if (usertype.equals("Admin")){
+            return true;
+        }
+        else{
+            return false;
+        }
+    }
 }
 
 
