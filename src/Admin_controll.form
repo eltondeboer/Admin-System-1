@@ -198,7 +198,7 @@
                     <properties/>
                     <border type="none"/>
                     <children>
-                      <component id="1a94d" class="javax.swing.JTable" binding="Jtble_View_Loans">
+                      <component id="cf17" class="javax.swing.JTable" binding="Jtble_View_Loans">
                         <constraints/>
                         <properties/>
                       </component>
@@ -246,7 +246,7 @@
                     <properties/>
                     <border type="none"/>
                     <children>
-                      <component id="9a775" class="javax.swing.JTable" binding="table1" default-binding="true">
+                      <component id="9a775" class="javax.swing.JTable" binding="u_late_returns_JTbl">
                         <constraints/>
                         <properties/>
                       </component>
@@ -559,7 +559,7 @@
                     <properties/>
                     <border type="none"/>
                     <children>
-                      <component id="8bced" class="javax.swing.JTable" binding="table4" default-binding="true">
+                      <component id="8bced" class="javax.swing.JTable" binding="Jtble_search_results">
                         <constraints/>
                         <properties/>
                       </component>
@@ -820,17 +820,6 @@
             <properties/>
             <border type="none"/>
             <children>
-              <component id="bd720" class="javax.swing.JTextField" binding="textField1" default-binding="true">
-                <constraints>
-                  <grid row="0" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="6" anchor="0" fill="1" indent="0" use-parent-layout="false">
-                    <preferred-size width="150" height="-1"/>
-                  </grid>
-                </constraints>
-                <properties/>
-                <clientProperties>
-                  <caretWidth class="java.lang.Integer" value="20"/>
-                </clientProperties>
-              </component>
               <component id="bf295" class="javax.swing.JButton" binding="search_btn">
                 <constraints>
                   <grid row="0" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="0" indent="0" use-parent-layout="false"/>
@@ -839,6 +828,14 @@
                   <label value="Search"/>
                   <text value="Search"/>
                 </properties>
+              </component>
+              <component id="4066c" class="javax.swing.JTextField" binding="tf_searchbar">
+                <constraints>
+                  <grid row="0" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="6" anchor="8" fill="1" indent="0" use-parent-layout="false">
+                    <preferred-size width="150" height="-1"/>
+                  </grid>
+                </constraints>
+                <properties/>
               </component>
             </children>
           </grid>

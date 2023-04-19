@@ -29,13 +29,13 @@ public class Admin_controll extends JDialog{
     private JPanel JP_signed_out;
     private JButton reserveItem_btn;
     private JLabel Admin_actions_label;
-    private JTextField textField1;
+    private JTextField tf_searchbar;
     private JPanel Searchbar;
     private JButton search_btn;
     private JPanel HomePage;
     private JButton reg_new_user_btn;
     private JPanel reg_user;
-    private JTable table1;
+    private JTable u_late_returns_JTbl;
     private JTextField textField2;
     private JButton return_item_btn;
     private JTextField textField3;
@@ -48,7 +48,7 @@ public class Admin_controll extends JDialog{
     private JPanel Recipt_of_loan;
     private JTable table3;
     private JLabel SR_for_label;
-    private JTable table4;
+    private JTable Jtble_search_results;
     private JTable table5;
     private JButton reserveSelectedButton;
     private JButton button1;
@@ -104,7 +104,7 @@ public class Admin_controll extends JDialog{
         //Setting the opening state to signed out
         signed_out_state();
         //Create database connection to grab tables to insert
-        DataBase_tbles dbconn = new DataBase_tbles();
+        DataBase_conn dbconn = new DataBase_conn();
         //Sets the windows title, content pane, size, makes it reziseable, relitive to parent object, and makes it close when closed.
         setTitle("Library System");
         setContentPane(Main_panel);
@@ -113,12 +113,35 @@ public class Admin_controll extends JDialog{
         setLocationRelativeTo(parent);
         setDefaultCloseOperation(DISPOSE_ON_CLOSE);
         //Sets data from database in JTable and makes it non editable.
-        Jtble_View_Loans.setEnabled(false);
-        Jtble_View_Loans.setVisible(true);
         //Customizes UI to hide tabs
         tabbedPane1.setUI(new HiddenTabbedPaneUI());
         //Opens HomePage on start
         tabbedPane1.setSelectedIndex(9);
+
+        //When user presses login data gets checked against the database through function "getAutenticateUser(email, password);"
+        //Then gets either denied or signed in.
+        //Depending on user type the UI gets set.
+        login_btn_ok.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                boolean acces = false;
+                String email = tfEmail.getText();
+                String password = String.valueOf(pfPassword.getPassword());
+
+                acces = user1.getAutenticateUser(email, password);
+                if(acces){
+                    signIn_btn.setText("Sign out");
+                    tabbedPane1.setSelectedIndex(0);
+                    signed_in_state(user1);
+                    Jtble_View_Loans.setModel(dbconn.view_loans_table(user1));
+                }
+                else{
+                    JOptionPane.showMessageDialog(Admin_controll.this,
+                            "Email or Password Invalid");
+                }
+            }
+        });
+
         view_loans_btn.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -130,6 +153,7 @@ public class Admin_controll extends JDialog{
             @Override
             public void actionPerformed(ActionEvent e) {
                 tabbedPane1.setSelectedIndex(1);
+                u_late_returns_JTbl.setModel(dbconn.view_late_userReturns_table(user1));
             }
         });
 
@@ -153,30 +177,6 @@ public class Admin_controll extends JDialog{
                     tabbedPane1.setSelectedIndex(7);
                 }
             }
-        });
-
-        //When user presses login data gets checked against the database through function "getAutenticateUser(email, password);"
-        //Then gets either denied or signed in.
-        //Depending on user type the UI gets set.
-        login_btn_ok.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                boolean acces = false;
-                String email = tfEmail.getText();
-                String password = String.valueOf(pfPassword.getPassword());
-
-                acces = user1.getAutenticateUser(email, password);
-                    if(acces){
-                        signIn_btn.setText("Sign out");
-                        tabbedPane1.setSelectedIndex(0);
-                        signed_in_state(user1);
-                        Jtble_View_Loans.setModel(dbconn.view_loans_table(user1));
-                    }
-                    else{
-                        JOptionPane.showMessageDialog(Admin_controll.this,
-                                "Email or Password Invalid");
-                    }
-                }
         });
 
         //Function so that the checkmark hides and shows password.
@@ -212,6 +212,16 @@ public class Admin_controll extends JDialog{
             @Override
             public void actionPerformed(ActionEvent e) {
                 tabbedPane1.setSelectedIndex(5);
+            }
+        });
+
+        search_btn.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                String search_txt = tf_searchbar.getText();
+                Jtble_search_results.setModel(dbconn.search_results(search_txt, SR_for_label));
+                tabbedPane1.setSelectedIndex(6);
+                tf_searchbar.setText("");
             }
         });
         setVisible(true);

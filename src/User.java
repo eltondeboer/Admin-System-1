@@ -7,7 +7,6 @@ public class User {
     public String phone;
     public String password;
     public String usertype;
-    public int user_amount_loan;
     public boolean signed_in = false;
 
     public boolean getAutenticateUser(String email1, String password1){
@@ -34,7 +33,6 @@ public class User {
                 phone = resultSet.getString("userPhoneNumber");
                 password = resultSet.getString("userPass");
                 usertype = resultSet.getString("userType");
-                user_amount_loan = resultSet.getInt("currentLoan");
             }
 
             stmt.close();
@@ -59,7 +57,6 @@ public class User {
         password = null;
         usertype = null;
         user_id = null;
-        user_amount_loan = 0;
         signed_in = false;
     }
     public boolean user_is_admin(){
