@@ -69,7 +69,6 @@ public class Admin_controll extends JDialog{
         pfPassword.setText("");
     }
     public void signed_in_state(User user) {
-
         if (user.user_is_admin()){
             view_loans_btn.setVisible(true);
             late_btn.setVisible(true);
@@ -95,6 +94,8 @@ public class Admin_controll extends JDialog{
     }
     public Admin_controll (JFrame parent){
         super(parent);
+        //Creates instant of user.
+        User user1 = new User();
         //Makes the searchbar not resize depending on window size
         Searchbar.setMaximumSize(new Dimension(Searchbar.getPreferredSize().width, Searchbar.getPreferredSize().height));
         Searchbar.setMinimumSize(new Dimension(Searchbar.getPreferredSize().width, Searchbar.getPreferredSize().height));
@@ -112,13 +113,10 @@ public class Admin_controll extends JDialog{
         setLocationRelativeTo(parent);
         setDefaultCloseOperation(DISPOSE_ON_CLOSE);
         //Sets data from database in JTable and makes it non editable.
-        Jtble_View_Loans.setModel(dbconn.get_items_test());
         Jtble_View_Loans.setEnabled(false);
         Jtble_View_Loans.setVisible(true);
         //Customizes UI to hide tabs
         tabbedPane1.setUI(new HiddenTabbedPaneUI());
-        //Creates instant of user.
-        User user1 = new User();
         //Opens HomePage on start
         tabbedPane1.setSelectedIndex(9);
         view_loans_btn.addActionListener(new ActionListener() {
@@ -147,7 +145,6 @@ public class Admin_controll extends JDialog{
             public void actionPerformed(ActionEvent e) {
                 if (user1.signed_in){
                     user1.user_signout();
-                    System.out.println(user1.name);
                     tabbedPane1.setSelectedIndex(8);
                     signIn_btn.setText("Sign In");
                     signed_out_state();
@@ -173,6 +170,7 @@ public class Admin_controll extends JDialog{
                         signIn_btn.setText("Sign out");
                         tabbedPane1.setSelectedIndex(0);
                         signed_in_state(user1);
+                        Jtble_View_Loans.setModel(dbconn.view_loans_table(user1));
                     }
                     else{
                         JOptionPane.showMessageDialog(Admin_controll.this,
