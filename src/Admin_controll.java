@@ -2,6 +2,8 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
 
 public class Admin_controll extends JDialog{
     private JButton view_loans_btn;
@@ -222,6 +224,30 @@ public class Admin_controll extends JDialog{
                 Jtble_search_results.setModel(dbconn.search_results(search_txt, SR_for_label));
                 tabbedPane1.setSelectedIndex(6);
                 tf_searchbar.setText("");
+            }
+        });
+        tf_searchbar.addKeyListener(new KeyAdapter() {
+            @Override
+            public void keyPressed(KeyEvent e) {
+                if (e.getKeyCode()==KeyEvent.VK_ENTER){
+                    search_btn.doClick();
+                }
+            }
+        });
+        tfEmail.addKeyListener(new KeyAdapter() {
+            @Override
+            public void keyPressed(KeyEvent e) {
+                if (e.getKeyCode()==KeyEvent.VK_ENTER){
+                    login_btn_ok.doClick();
+                }
+            }
+        });
+        pfPassword.addKeyListener(new KeyAdapter() {
+            @Override
+            public void keyPressed(KeyEvent e) {
+                if (e.getKeyCode()==KeyEvent.VK_ENTER){
+                    login_btn_ok.doClick();
+                }
             }
         });
         setVisible(true);

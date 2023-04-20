@@ -98,13 +98,13 @@ public class DataBase_conn {
 
 
             while (resultSet.next()) {
-                String ISBN = resultSet.getString("ISBN");
                 String title = resultSet.getString("Title");
                 String type = resultSet.getString("Type");
                 String dir_auth = resultSet.getString("Director_Author");
                 String classification = resultSet.getString("Classification");
                 String publisher = resultSet.getString("Publisher");
-                model.addRow(new Object[]{ISBN, title, type, dir_auth, classification, publisher});
+                String ISBN = resultSet.getString("ISBN");
+                model.addRow(new Object[]{title, type, dir_auth, classification, publisher, ISBN});
             }
             System.out.println("Number of rows in DefaultTableModel: " + model.getRowCount());
 
