@@ -165,4 +165,61 @@ public class DataBase_conn {
             e.printStackTrace();
         }
     }
+    public boolean return_loan(JTextField return_BC_tf, User user){
+        final String DB_URL = "jdbc:mysql://localhost:3306/library";
+        final String USERNAME = "java";
+        final String PASSWORD = "Javaex12";
+
+        String barcode = return_BC_tf.getText();
+
+        try{
+            Connection conn = DriverManager.getConnection(DB_URL, USERNAME, PASSWORD);
+
+            Statement stmt = conn.createStatement();
+            String sql = "UPDATE loan SET Returned = 1 WHERE (Barcode = ?) and userID = ?;";
+            PreparedStatement preparedStatement = conn.prepareStatement(sql);
+            preparedStatement.setString(1, barcode);
+            preparedStatement.setString(2, user.user_id);
+
+            int rows_effected = preparedStatement.executeUpdate();
+            if (rows_effected == 0){
+                return false;
+            }
+            else{
+                return true;
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+    public String loan_book (JTextField loan_BC_tf, User user){
+        final String DB_URL = "jdbc:mysql://localhost:3306/library";
+        final String USERNAME = "java";
+        final String PASSWORD = "Javaex12";
+
+        String barcode = loan_BC_tf.getText();
+
+        try{
+            Connection conn = DriverManager.getConnection(DB_URL, USERNAME, PASSWORD);
+
+            Statement stmt = conn.createStatement();
+            String sql = "INSERT INTO loan (userID, Barcode, BorrowDate, Returned) VALUES (?, ?, CURDATE(), '0');";
+            PreparedStatement preparedStatement = conn.prepareStatement(sql);
+            preparedStatement.setString(1, user.user_id);
+            preparedStatement.setString(2, barcode);
+
+            preparedStatement.executeUpdate();
+            return "Success";
+
+        } catch (SQLException ex) {
+            System.out.println(ex.getMessage());
+            if (ex.getMessage().contains("Refrence Copy can not be loaned")) {
+                return "Refrence";
+            } else {
+                return "Barcode";
+            }
+        }
+    }
 }

@@ -15,13 +15,13 @@ public class Admin_controll extends JDialog{
     private JTabbedPane tabbedPane1;
     private JPanel JP_View_loans;
     private JButton manage_btn;
-    private JButton all_late_btn;
+    private JButton add_item_btn;
     private JButton signIn_btn;
     private JPanel JP_Late_Returns;
     private JPanel JP_Return_Loan;
     private JPanel JP_Loan_Item;
     private JPanel JP_Manage_Item;
-    private JPanel JP_All_Late;
+    private JPanel JP_add_item;
     private JPanel JP_Search_Results;
     private JButton loan_btn;
     private JTable Jtble_View_Loans;
@@ -40,9 +40,9 @@ public class Admin_controll extends JDialog{
     private JButton reg_new_user_btn;
     private JPanel reg_user;
     private JTable u_late_returns_JTbl;
-    private JTextField textField2;
+    private JTextField return_bc_tf;
     private JButton return_item_btn;
-    private JTextField textField3;
+    private JTextField loan_BC_tf;
     private JButton loan_item_btn;
     private JTextField textField4;
     private JTable table2;
@@ -50,7 +50,6 @@ public class Admin_controll extends JDialog{
     private JButton pushEditsButton;
     private JPanel Reserve_item;
     private JPanel Recipt_of_loan;
-    private JTable table3;
     private JLabel SR_for_label;
     private JTable Jtble_search_results;
     private JTable table5;
@@ -80,7 +79,7 @@ public class Admin_controll extends JDialog{
         loan_btn.setVisible(false);
         reserveItem_btn.setVisible(false);
         manage_btn.setVisible(false);
-        all_late_btn.setVisible(false);
+        add_item_btn.setVisible(false);
         Admin_actions_label.setVisible(false);
         tfEmail.setText("");
         pfPassword.setText("");
@@ -93,7 +92,7 @@ public class Admin_controll extends JDialog{
             loan_btn.setVisible(true);
             reserveItem_btn.setVisible(true);
             manage_btn.setVisible(true);
-            all_late_btn.setVisible(true);
+            add_item_btn.setVisible(true);
             Admin_actions_label.setVisible(true);
         }
         else{
@@ -103,7 +102,7 @@ public class Admin_controll extends JDialog{
             loan_btn.setVisible(true);
             reserveItem_btn.setVisible(true);
             manage_btn.setVisible(false);
-            all_late_btn.setVisible(false);
+            add_item_btn.setVisible(false);
             Admin_actions_label.setVisible(false);
         }
 
@@ -224,7 +223,7 @@ public class Admin_controll extends JDialog{
                 tabbedPane1.setSelectedIndex(4);
             }
         });
-        all_late_btn.addActionListener(new ActionListener() {
+        add_item_btn.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 tabbedPane1.setSelectedIndex(5);
@@ -411,6 +410,50 @@ public class Admin_controll extends JDialog{
             public void keyPressed(KeyEvent e) {
                 if (e.getKeyCode()==KeyEvent.VK_ENTER){
                     reg_BTN_register.doClick();
+                }
+            }
+        });
+        return_item_btn.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                Boolean returned = dbconn.return_loan(return_bc_tf, user1);
+                if (returned){
+                    JOptionPane.showMessageDialog(Admin_controll.this, "Book Returned Successfully", "Success", JOptionPane.INFORMATION_MESSAGE);
+                }
+                else{
+                    JOptionPane.showMessageDialog(Admin_controll.this, "Barcode not in system", "Error", JOptionPane.INFORMATION_MESSAGE);
+                }
+                Jtble_View_Loans.setModel(dbconn.view_loans_table(user1));
+            }
+        });
+        return_bc_tf.addKeyListener(new KeyAdapter() {
+            @Override
+            public void keyPressed(KeyEvent e) {
+                if (e.getKeyCode()==KeyEvent.VK_ENTER){
+                    return_item_btn.doClick();
+                }
+            }
+        });
+        loan_item_btn.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                String result = dbconn.loan_book(loan_BC_tf, user1);
+                if(result.equals("Refrence")) {
+                    JOptionPane.showMessageDialog(Admin_controll.this, "This is a Reference Copy and cannot be loaned", "Error", JOptionPane.INFORMATION_MESSAGE);
+                } else if (result.equals("Barcode")) {
+                    JOptionPane.showMessageDialog(Admin_controll.this, "Barcode not in system", "Error", JOptionPane.INFORMATION_MESSAGE);
+                } else {
+                    JOptionPane.showMessageDialog(Admin_controll.this, "Book Loaned Successfully", "Success", JOptionPane.INFORMATION_MESSAGE);
+                }
+                Jtble_View_Loans.setModel(dbconn.view_loans_table(user1));
+                loan_BC_tf.setText("");
+            }
+        });
+        loan_BC_tf.addKeyListener(new KeyAdapter() {
+            @Override
+            public void keyPressed(KeyEvent e) {
+                if (e.getKeyCode()==KeyEvent.VK_ENTER){
+                    return_item_btn.doClick();
                 }
             }
         });
