@@ -1,4 +1,6 @@
 import javax.swing.*;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -56,6 +58,19 @@ public class Admin_controll extends JDialog{
     private JButton button1;
     private JTextField textField5;
     private JButton button2;
+    private JTextField reg_TF_name;
+    private JTextField reg_TF_phone;
+    private JTextField reg_TF_email;
+    private JPasswordField reg_PF_pass;
+    private JPasswordField reg_PF_Cpass;
+    private JCheckBox reg_CB_showpass;
+    private JButton reg_BTN_register;
+    private JLabel reg_JLabel_Cpass;
+    private JLabel reg_JLabel_pass;
+    private JLabel reg_JLabel_email;
+    private JLabel reg_JLabel_phone;
+    private JLabel reg_JLabel_name;
+    private JLabel reg_error_label;
 
 
     public void signed_out_state() {
@@ -82,7 +97,6 @@ public class Admin_controll extends JDialog{
             Admin_actions_label.setVisible(true);
         }
         else{
-            System.out.println(user.user_is_admin());
             view_loans_btn.setVisible(true);
             late_btn.setVisible(true);
             return_btn.setVisible(true);
@@ -247,6 +261,156 @@ public class Admin_controll extends JDialog{
             public void keyPressed(KeyEvent e) {
                 if (e.getKeyCode()==KeyEvent.VK_ENTER){
                     login_btn_ok.doClick();
+                }
+            }
+        });
+        tabbedPane1.addChangeListener(new ChangeListener() {
+            @Override
+            public void stateChanged(ChangeEvent e) {
+                if(tabbedPane1.getSelectedIndex() == 11 || tabbedPane1.getSelectedIndex() ==4){
+                    Searchbar.setVisible(false);
+                }
+                else {
+                    Searchbar.setVisible(true);
+                }
+            }
+        });
+        reg_new_user_btn.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                tabbedPane1.setSelectedIndex(10);
+            }
+        });
+
+        //Checks if fields are empty and informs the user through color and text, otherwise adds user to database through function
+        reg_BTN_register.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                // Get user input from the text fields
+                String name = reg_TF_name.getText().trim();
+                String phone = reg_TF_phone.getText().trim();
+                String email = reg_TF_email.getText().trim();
+                String password = new String(reg_PF_pass.getPassword());
+                String cpassword = new String(reg_PF_Cpass.getPassword());
+
+                // Check if any field is empty
+                boolean hasEmptyField = false;
+                if (name.isEmpty()) {
+                    reg_JLabel_name.setForeground(Color.RED);
+                    hasEmptyField = true;
+                } else {
+                    reg_JLabel_name.setForeground(Color.BLACK);
+                }
+                if (phone.isEmpty()) {
+                    reg_JLabel_phone.setForeground(Color.RED);
+                    hasEmptyField = true;
+                } else {
+                    reg_JLabel_phone.setForeground(Color.BLACK);
+                }
+                if (email.isEmpty()) {
+                    reg_JLabel_email.setForeground(Color.RED);
+                    hasEmptyField = true;
+                } else {
+                    reg_JLabel_email.setForeground(Color.BLACK);
+                }
+                if (password.isEmpty()) {
+                    reg_JLabel_pass.setForeground(Color.RED);
+                    hasEmptyField = true;
+                } else {
+                    reg_JLabel_pass.setForeground(Color.BLACK);
+                }
+                if (cpassword.isEmpty()) {
+                    reg_JLabel_Cpass.setForeground(Color.RED);
+                    hasEmptyField = true;
+                } else {
+                    reg_JLabel_Cpass.setForeground(Color.BLACK);
+                }
+
+                if (hasEmptyField) {
+                    reg_error_label.setText("Please fill in all fields");
+                    return;
+                }
+
+                // Check if passwords match
+                if (!password.equals(cpassword)) {
+                    reg_error_label.setText("Passwords do not match");
+                    return;
+                }
+
+                dbconn.add_user(reg_TF_name,
+                        reg_TF_phone,
+                        reg_TF_email,
+                        reg_PF_pass);
+
+                reg_TF_name.setText("");
+                reg_TF_phone.setText("");
+                reg_TF_email.setText("");
+                reg_PF_pass.setText("");
+                reg_PF_Cpass.setText("");
+                reg_error_label.setText("");
+                reg_JLabel_name.setForeground(Color.BLACK);
+                reg_JLabel_phone.setForeground(Color.BLACK);
+                reg_JLabel_email.setForeground(Color.BLACK);
+                reg_JLabel_pass.setForeground(Color.BLACK);
+                reg_JLabel_Cpass.setForeground(Color.BLACK);
+
+                JOptionPane.showMessageDialog(Admin_controll.this, "User registered successfully", "Success", JOptionPane.INFORMATION_MESSAGE);
+
+            }
+        });
+
+        //Allows the checkbox to show the password entered to the user
+        reg_CB_showpass.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                if (reg_CB_showpass.isSelected()) {
+                    reg_PF_pass.setEchoChar((char) 0);
+                    reg_PF_Cpass.setEchoChar((char) 0);
+                } else {
+                    reg_PF_pass.setEchoChar('*');
+                    reg_PF_Cpass.setEchoChar('*');
+                }
+            }
+        });
+
+        //Everything under here until next comment is to make it posible to press enter intstead of the button.
+        reg_TF_name.addKeyListener(new KeyAdapter() {
+            @Override
+            public void keyPressed(KeyEvent e) {
+                if (e.getKeyCode()==KeyEvent.VK_ENTER){
+                    reg_BTN_register.doClick();
+                }
+            }
+        });
+        reg_TF_phone.addKeyListener(new KeyAdapter() {
+            @Override
+            public void keyPressed(KeyEvent e) {
+                if (e.getKeyCode()==KeyEvent.VK_ENTER){
+                    reg_BTN_register.doClick();
+                }
+            }
+        });
+        reg_TF_email.addKeyListener(new KeyAdapter() {
+            @Override
+            public void keyPressed(KeyEvent e) {
+                if (e.getKeyCode()==KeyEvent.VK_ENTER){
+                    reg_BTN_register.doClick();
+                }
+            }
+        });
+        reg_PF_pass.addKeyListener(new KeyAdapter() {
+            @Override
+            public void keyPressed(KeyEvent e) {
+                if (e.getKeyCode()==KeyEvent.VK_ENTER){
+                    reg_BTN_register.doClick();
+                }
+            }
+        });
+        reg_PF_Cpass.addKeyListener(new KeyAdapter() {
+            @Override
+            public void keyPressed(KeyEvent e) {
+                if (e.getKeyCode()==KeyEvent.VK_ENTER){
+                    reg_BTN_register.doClick();
                 }
             }
         });
