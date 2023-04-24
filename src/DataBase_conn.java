@@ -255,4 +255,39 @@ public class DataBase_conn {
             System.out.println(ex.getMessage());
         }
     }
+    public DefaultTableModel search_results_manage(String search_text) {
+        final String DB_URL = "jdbc:mysql://localhost:3306/library";
+        final String USERNAME = "java";
+        final String PASSWORD = "Javaex12";
+
+        DefaultTableModel model = new DefaultTableModel(new Object[]{"ISBN", "Title", "Type", "Director/Author", "Classification", "Publisher"}, 0);
+        try {
+            Connection conn = DriverManager.getConnection(DB_URL, USERNAME, PASSWORD);
+
+            Statement stmt = conn.createStatement();
+            String sql = "call library.sp_item_search(?);";
+            PreparedStatement preparedStatement = conn.prepareStatement(sql);
+            preparedStatement.setString(1, search_text);
+
+            ResultSet resultSet = preparedStatement.executeQuery();
+
+
+            while (resultSet.next()) {
+                String ISBN = resultSet.getString("ISBN");
+                String title = resultSet.getString("Title");
+                String type = resultSet.getString("Type");
+                String dir_auth = resultSet.getString("Director_Author");
+                String classification = resultSet.getString("Classification");
+                String publisher = resultSet.getString("Publisher");
+                model.addRow(new Object[]{ISBN, title, type, dir_auth, classification, publisher});
+            }
+
+            stmt.close();
+            conn.close();
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return model;
+    }
 }

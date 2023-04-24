@@ -469,6 +469,8 @@ public class Admin_controll extends JDialog{
         manage_btn_search.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
+                String searchterm = manage_tf_search.getText();
+                manage_JTble_searchresults.setModel(dbconn.search_results_manage(searchterm));
             }
         });
         manage_tf_search.addKeyListener(new KeyAdapter() {
@@ -477,6 +479,12 @@ public class Admin_controll extends JDialog{
                 if (e.getKeyCode()==KeyEvent.VK_ENTER){
                     manage_btn_search.doClick();
                 }
+            }
+        });
+        pushEditsButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                
             }
         });
         setVisible(true);
