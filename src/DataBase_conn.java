@@ -109,7 +109,6 @@ public class DataBase_conn {
                 String ISBN = resultSet.getString("ISBN");
                 model.addRow(new Object[]{title, type, dir_auth, classification, publisher, ISBN});
             }
-            System.out.println("Number of rows in DefaultTableModel: " + model.getRowCount());
 
             if (resultSet == null) {
                 txt_label.setText("No results found for: " + search_text);
@@ -214,12 +213,46 @@ public class DataBase_conn {
             return "Success";
 
         } catch (SQLException ex) {
-            System.out.println(ex.getMessage());
             if (ex.getMessage().contains("Refrence Copy can not be loaned")) {
                 return "Refrence";
             } else {
                 return "Barcode";
             }
+        }
+    }
+    public void get_recipt (String barcode,
+                              JLabel title,
+                              JLabel isbn,
+                              JLabel loan_date,
+                              JLabel return_date){
+
+        final String DB_URL = "jdbc:mysql://localhost:3306/library";
+        final String USERNAME = "java";
+        final String PASSWORD = "Javaex12";
+
+        try{
+            Connection conn = DriverManager.getConnection(DB_URL, USERNAME, PASSWORD);
+
+            Statement stmt = conn.createStatement();
+            String sql = "SELECT i.Title, i.ISBN, l.BorrowDate, l.ReturnDate FROM loan l Join item_copy ic ON ic.Barcode = l.Barcode Join item i ON ic.ISBN = i.ISBN Where l.Barcode = ?";
+            PreparedStatement preparedStatement = conn.prepareStatement(sql);
+            preparedStatement.setString(1, barcode);
+
+            ResultSet resultSet = preparedStatement.executeQuery();
+
+            while (resultSet.next()) {
+                String title_recived = resultSet.getString("Title");
+                String ISBN_recived = resultSet.getString("ISBN");
+                String Date_of_loan = resultSet.getString("BorrowDate");
+                String Date_of_return = resultSet.getString("ReturnDate");
+                title.setText("Title: " + title_recived);
+                isbn.setText("ISBN: " + ISBN_recived);
+                loan_date.setText("Date of Loan: " + Date_of_loan);
+                return_date.setText("Return Date: " + Date_of_return);
+            }
+
+        } catch (SQLException ex) {
+            System.out.println(ex.getMessage());
         }
     }
 }

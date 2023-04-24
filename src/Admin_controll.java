@@ -44,17 +44,16 @@ public class Admin_controll extends JDialog{
     private JButton return_item_btn;
     private JTextField loan_BC_tf;
     private JButton loan_item_btn;
-    private JTextField textField4;
-    private JTable table2;
+    private JTextField manage_tf_search;
+    private JTable manage_JTble_searchresults;
     private JButton deleteSelectedButton;
     private JButton pushEditsButton;
     private JPanel Reserve_item;
-    private JPanel Recipt_of_loan;
     private JLabel SR_for_label;
     private JTable Jtble_search_results;
     private JTable table5;
     private JButton reserveSelectedButton;
-    private JButton button1;
+    private JButton manage_btn_search;
     private JTextField textField5;
     private JButton button2;
     private JTextField reg_TF_name;
@@ -70,6 +69,11 @@ public class Admin_controll extends JDialog{
     private JLabel reg_JLabel_phone;
     private JLabel reg_JLabel_name;
     private JLabel reg_error_label;
+    private JPanel Receipt_of_loan_return;
+    private JLabel receipt_title_label;
+    private JLabel receipt_ISBN_label;
+    private JLabel receipt_lDate_labe;
+    private JLabel receipt_rDate_label;
 
 
     public void signed_out_state() {
@@ -424,6 +428,7 @@ public class Admin_controll extends JDialog{
                     JOptionPane.showMessageDialog(Admin_controll.this, "Barcode not in system", "Error", JOptionPane.INFORMATION_MESSAGE);
                 }
                 Jtble_View_Loans.setModel(dbconn.view_loans_table(user1));
+                return_bc_tf.setText("");
             }
         });
         return_bc_tf.addKeyListener(new KeyAdapter() {
@@ -437,6 +442,7 @@ public class Admin_controll extends JDialog{
         loan_item_btn.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
+                String barcode = loan_BC_tf.getText();
                 String result = dbconn.loan_book(loan_BC_tf, user1);
                 if(result.equals("Refrence")) {
                     JOptionPane.showMessageDialog(Admin_controll.this, "This is a Reference Copy and cannot be loaned", "Error", JOptionPane.INFORMATION_MESSAGE);
@@ -444,8 +450,11 @@ public class Admin_controll extends JDialog{
                     JOptionPane.showMessageDialog(Admin_controll.this, "Barcode not in system", "Error", JOptionPane.INFORMATION_MESSAGE);
                 } else {
                     JOptionPane.showMessageDialog(Admin_controll.this, "Book Loaned Successfully", "Success", JOptionPane.INFORMATION_MESSAGE);
+
                 }
                 Jtble_View_Loans.setModel(dbconn.view_loans_table(user1));
+                dbconn.get_recipt(barcode, receipt_title_label, receipt_ISBN_label, receipt_lDate_labe, receipt_rDate_label);
+                tabbedPane1.setSelectedIndex(12);
                 loan_BC_tf.setText("");
             }
         });
@@ -454,6 +463,19 @@ public class Admin_controll extends JDialog{
             public void keyPressed(KeyEvent e) {
                 if (e.getKeyCode()==KeyEvent.VK_ENTER){
                     return_item_btn.doClick();
+                }
+            }
+        });
+        manage_btn_search.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+            }
+        });
+        manage_tf_search.addKeyListener(new KeyAdapter() {
+            @Override
+            public void keyPressed(KeyEvent e) {
+                if (e.getKeyCode()==KeyEvent.VK_ENTER){
+                    manage_btn_search.doClick();
                 }
             }
         });
