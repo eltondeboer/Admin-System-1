@@ -74,6 +74,7 @@ public class Admin_controll extends JDialog{
     private JLabel receipt_ISBN_label;
     private JLabel receipt_lDate_labe;
     private JLabel receipt_rDate_label;
+    private JComboBox manage_JCB_selectTable;
 
 
     public void signed_out_state() {
@@ -136,6 +137,9 @@ public class Admin_controll extends JDialog{
         tabbedPane1.setUI(new HiddenTabbedPaneUI());
         //Opens HomePage on start
         tabbedPane1.setSelectedIndex(9);
+        manage_JCB_selectTable.addItem("item");
+        manage_JCB_selectTable.addItem("item_copy");
+
 
         //When user presses login data gets checked against the database through function "getAutenticateUser(email, password);"
         //Then gets either denied or signed in.
@@ -469,8 +473,14 @@ public class Admin_controll extends JDialog{
         manage_btn_search.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
+                String selected = (String)manage_JCB_selectTable.getSelectedItem();
                 String searchterm = manage_tf_search.getText();
-                manage_JTble_searchresults.setModel(dbconn.search_results_manage(searchterm));
+                if(selected.equals("item")){
+                    manage_JTble_searchresults.setModel(dbconn.search_results_item_manage(searchterm));
+                }
+                else {
+                    manage_JTble_searchresults.setModel(dbconn.search_results_copy_manage(searchterm));
+                }
             }
         });
         manage_tf_search.addKeyListener(new KeyAdapter() {
@@ -484,7 +494,28 @@ public class Admin_controll extends JDialog{
         pushEditsButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                
+                String selected = (String)manage_JCB_selectTable.getSelectedItem();
+                int result = JOptionPane.showConfirmDialog(Admin_controll.this, "Are you sure you want to update the database?", "Confirmation", JOptionPane.YES_NO_OPTION);
+                if(selected.equals("item")){
+                    if (result == JOptionPane.YES_OPTION) {
+                        dbconn.push_edits_item(manage_JTble_searchresults);
+                        JOptionPane.showMessageDialog(Admin_controll.this, "Database updated Successfully", "Success", JOptionPane.INFORMATION_MESSAGE);
+                    }
+                    else {
+                        JOptionPane.showMessageDialog(Admin_controll.this, "Update cancelled.", "Cancelled", JOptionPane.INFORMATION_MESSAGE);
+                        manage_btn_search.doClick();
+                    }
+                }
+                else{
+                    if (result == JOptionPane.YES_OPTION) {
+                        dbconn.push_edits_item_copy(manage_JTble_searchresults);
+                        JOptionPane.showMessageDialog(Admin_controll.this, "Database updated Successfully", "Success", JOptionPane.INFORMATION_MESSAGE);
+                    }
+                    else {
+                        JOptionPane.showMessageDialog(Admin_controll.this, "Update cancelled.", "Cancelled", JOptionPane.INFORMATION_MESSAGE);
+                        manage_btn_search.doClick();
+                    }
+                }
             }
         });
         setVisible(true);

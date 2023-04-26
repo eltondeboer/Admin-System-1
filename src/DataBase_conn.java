@@ -1,6 +1,5 @@
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
-import java.awt.*;
 import java.sql.*;
 
 public class DataBase_conn {
@@ -255,12 +254,12 @@ public class DataBase_conn {
             System.out.println(ex.getMessage());
         }
     }
-    public DefaultTableModel search_results_manage(String search_text) {
+    public DefaultTableModel search_results_item_manage(String search_text) {
         final String DB_URL = "jdbc:mysql://localhost:3306/library";
         final String USERNAME = "java";
         final String PASSWORD = "Javaex12";
 
-        DefaultTableModel model = new DefaultTableModel(new Object[]{"ISBN", "Title", "Type", "Director/Author", "Classification", "Publisher"}, 0);
+        DefaultTableModel model = new DefaultTableModel(new Object[]{"ISBN", "Title", "Type", "Location", "Availability", "Max_loan_weeks", "Director/Author", "Classification", "Publisher"}, 0);
         try {
             Connection conn = DriverManager.getConnection(DB_URL, USERNAME, PASSWORD);
 
@@ -276,10 +275,13 @@ public class DataBase_conn {
                 String ISBN = resultSet.getString("ISBN");
                 String title = resultSet.getString("Title");
                 String type = resultSet.getString("Type");
+                String location = resultSet.getString("Location");
+                int Availability = resultSet.getInt("Availability");
+                int Max_loan_weeks = resultSet.getInt("MaxLoan_Weeks");
                 String dir_auth = resultSet.getString("Director_Author");
                 String classification = resultSet.getString("Classification");
                 String publisher = resultSet.getString("Publisher");
-                model.addRow(new Object[]{ISBN, title, type, dir_auth, classification, publisher});
+                model.addRow(new Object[]{ISBN, title, type, location, Availability, Max_loan_weeks, dir_auth, classification, publisher});
             }
 
             stmt.close();
@@ -289,5 +291,107 @@ public class DataBase_conn {
             e.printStackTrace();
         }
         return model;
+    }
+    public DefaultTableModel search_results_copy_manage(String search_text) {
+        final String DB_URL = "jdbc:mysql://localhost:3306/library";
+        final String USERNAME = "java";
+        final String PASSWORD = "Javaex12";
+
+        DefaultTableModel model = new DefaultTableModel(new Object[]{"ISBN", "Barcode", "IsReferenceCopy"}, 0);
+        try {
+            Connection conn = DriverManager.getConnection(DB_URL, USERNAME, PASSWORD);
+
+            Statement stmt = conn.createStatement();
+            String sql = "call library.sp_item_copy_search(?);";
+            PreparedStatement preparedStatement = conn.prepareStatement(sql);
+            preparedStatement.setString(1, search_text);
+
+            ResultSet resultSet = preparedStatement.executeQuery();
+
+
+            while (resultSet.next()) {
+                String ISBN = resultSet.getString("ISBN");
+                String Barcode = resultSet.getString("Barcode");
+                String IsReferenceCopy = resultSet.getString("IsReferenceCopy");
+                model.addRow(new Object[]{ISBN, Barcode, IsReferenceCopy});
+            }
+
+            stmt.close();
+            conn.close();
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return model;
+    }
+    public static void push_edits_item(JTable model) {
+        final String DB_URL = "jdbc:mysql://localhost:3306/library";
+        final String USERNAME = "java";
+        final String PASSWORD = "Javaex12";
+
+        for (int i = 0; i < model.getRowCount(); i++){
+            String ISBN = (String) model.getValueAt(i, 0);
+            String Title = (String) model.getValueAt(i, 1);
+            String Type = (String) model.getValueAt(i, 2);
+            String Location = (String) model.getValueAt(i, 3);
+            int Availability =(Integer) model.getValueAt(i, 4);
+            int Max_loan_weeks = (Integer) model.getValueAt(i, 5);
+            String Director_Author = (String) model.getValueAt(i, 6);
+            String Classification = (String) model.getValueAt(i, 7);
+            String Publisher = (String) model.getValueAt(i, 8);
+
+            String updateQuery = "UPDATE item SET ISBN=?, Title=?, Type=?, Location=?, Availability=?, MaxLoan_Weeks=?, Classification=?, Director_Author=?, Publisher=? WHERE ISBN=?";
+            try (Connection conn = DriverManager.getConnection(DB_URL, USERNAME, PASSWORD);
+                 PreparedStatement stmt = conn.prepareStatement(updateQuery)) {
+                stmt.setString(1, ISBN);
+                stmt.setString(2, Title);
+                stmt.setString(3, Type);
+                stmt.setString(4, Location);
+                stmt.setInt(5, Availability);
+                stmt.setInt(6, Max_loan_weeks);
+                stmt.setString(7, Classification);
+                stmt.setString(8, Director_Author);
+                stmt.setString(9, Publisher);
+                stmt.setString(10, ISBN);
+                stmt.executeUpdate();
+
+
+                stmt.close();
+                conn.close();
+            } catch (SQLException e) {
+                throw new RuntimeException(e);
+            }
+        }
+    }
+    public static void push_edits_item_copy(JTable model) {
+
+        final String DB_URL = "jdbc:mysql://localhost:3306/library";
+        final String USERNAME = "java";
+        final String PASSWORD = "Javaex12";
+
+        for (int i = 0; i < model.getRowCount(); i++){
+            String ISBN = (String) model.getValueAt(i, 0);
+            String Barcode = (String) model.getValueAt(i, 1);
+            String IsReferenceCopy = (String) model.getValueAt(i, 2);
+
+            String updateQuery = "UPDATE item_copy SET Barcode = ?, ISBN = ?, IsReferenceCopy = ? WHERE Barcode = ?";
+            try (Connection conn = DriverManager.getConnection(DB_URL, USERNAME, PASSWORD);
+                 PreparedStatement stmt = conn.prepareStatement(updateQuery)) {
+                stmt.setString(1, Barcode);
+                stmt.setString(2, ISBN);
+                stmt.setString(3, IsReferenceCopy);
+                stmt.setString(4, Barcode);
+
+                System.out.println(stmt.toString());
+                stmt.executeUpdate();
+
+
+                stmt.close();
+                conn.close();
+            } catch (SQLException e) {
+                throw new RuntimeException(e);
+            }
+
+        }
     }
 }
