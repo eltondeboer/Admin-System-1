@@ -10,12 +10,12 @@ public class DataBase_conn {
         final String USERNAME = "java";
         final String PASSWORD = "Javaex12";
 
-        NonEditableTableModel model = new NonEditableTableModel(new Object[]{"Title", "Type", "Director/Author", "Publisher", "ReturnDate", "ISBN"}, 0);
+        NonEditableTableModel model = new NonEditableTableModel(new Object[]{"Title", "Type", "Director/Author", "Publisher/Country", "ReturnDate", "ISBN"}, 0);
         try {
             Connection conn = DriverManager.getConnection(DB_URL, USERNAME, PASSWORD);
 
             Statement stmt = conn.createStatement();
-            String sql = "SELECT i.ISBN, i.Title, i.Type, i.Director_Author, i.Publisher, l.ReturnDate FROM Loan l Join item_copy ic on l.Barcode = ic.Barcode Join item i on ic.ISBN = i.ISBN Where userID=? and Returned = 0";
+            String sql = "SELECT i.ISBN, i.Title, i.Type, i.Director_Author, i.Publisher_Country, l.ReturnDate FROM Loan l Join item_copy ic on l.Barcode = ic.Barcode Join item i on ic.ItemID = i.ItemID Where userID=? and Returned = 0";
             PreparedStatement preparedStatement = conn.prepareStatement(sql);
             preparedStatement.setString(1, user.user_id);
 
@@ -25,7 +25,7 @@ public class DataBase_conn {
                 String title = resultSet.getString("Title");
                 String type = resultSet.getString("Type");
                 String dir_auth = resultSet.getString("Director_Author");
-                String publisher = resultSet.getString("Publisher");
+                String publisher = resultSet.getString("Publisher_Country");
                 String returndate = resultSet.getString("ReturnDate");
                 String ISBN = resultSet.getString("ISBN");
                 model.addRow(new Object[]{title, type, dir_auth, publisher, returndate, ISBN});
@@ -47,12 +47,12 @@ public class DataBase_conn {
         final String USERNAME = "java";
         final String PASSWORD = "Javaex12";
 
-        NonEditableTableModel model = new NonEditableTableModel(new Object[]{"Title", "Type", "Director/Author", "Publisher", "ReturnDate", "ISBN"}, 0);
+        NonEditableTableModel model = new NonEditableTableModel(new Object[]{"Title", "Type", "Director/Author", "Publisher/Country", "ReturnDate", "ISBN"}, 0);
         try {
             Connection conn = DriverManager.getConnection(DB_URL, USERNAME, PASSWORD);
 
             Statement stmt = conn.createStatement();
-            String sql = "SELECT i.ISBN, i.Title, i.Type, i.Director_Author, i.Publisher, l.ReturnDate FROM Loan l Join item_copy ic on l.Barcode = ic.Barcode Join item i on ic.ISBN = i.ISBN Where userID=? and curdate() > l.ReturnDate";
+            String sql = "SELECT i.ISBN, i.Title, i.Type, i.Director_Author, i.Publisher_Country, l.ReturnDate FROM Loan l Join item_copy ic on l.Barcode = ic.Barcode Join item i on ic.ItemID = i.ItemID Where userID=? and curdate() > l.ReturnDate";
             PreparedStatement preparedStatement = conn.prepareStatement(sql);
             preparedStatement.setString(1, user.user_id);
 
@@ -63,7 +63,7 @@ public class DataBase_conn {
                 String title = resultSet.getString("Title");
                 String type = resultSet.getString("Type");
                 String dir_auth = resultSet.getString("Director_Author");
-                String publisher = resultSet.getString("Publisher");
+                String publisher = resultSet.getString("Publisher_Country");
                 String returndate = resultSet.getString("ReturnDate");
                 String ISBN = resultSet.getString("ISBN");
                 model.addRow(new Object[]{title, type, dir_auth, publisher, returndate, ISBN});
@@ -87,7 +87,7 @@ public class DataBase_conn {
         final String USERNAME = "java";
         final String PASSWORD = "Javaex12";
 
-        NonEditableTableModel model = new NonEditableTableModel(new Object[]{"Title", "Type", "Director/Author", "Classification", "Publisher", "ISBN"}, 0);
+        NonEditableTableModel model = new NonEditableTableModel(new Object[]{"Title", "Type", "Director/Author", "Classification", "Publisher/Country", "ISBN", "Age Restriction"}, 0);
         try {
             Connection conn = DriverManager.getConnection(DB_URL, USERNAME, PASSWORD);
 
@@ -104,9 +104,10 @@ public class DataBase_conn {
                 String type = resultSet.getString("Type");
                 String dir_auth = resultSet.getString("Director_Author");
                 String classification = resultSet.getString("Classification");
-                String publisher = resultSet.getString("Publisher");
+                String publisher = resultSet.getString("Publisher_Country");
                 String ISBN = resultSet.getString("ISBN");
-                model.addRow(new Object[]{title, type, dir_auth, classification, publisher, ISBN});
+                String Age_restriction = resultSet.getString("Age_Restriction");
+                model.addRow(new Object[]{title, type, dir_auth, classification, publisher, ISBN, Age_restriction});
             }
 
             if (resultSet == null) {
@@ -233,7 +234,7 @@ public class DataBase_conn {
             Connection conn = DriverManager.getConnection(DB_URL, USERNAME, PASSWORD);
 
             Statement stmt = conn.createStatement();
-            String sql = "SELECT i.Title, i.ISBN, l.BorrowDate, l.ReturnDate FROM loan l Join item_copy ic ON ic.Barcode = l.Barcode Join item i ON ic.ISBN = i.ISBN Where l.Barcode = ?";
+            String sql = "SELECT i.Title, i.ItemID, l.BorrowDate, l.ReturnDate FROM loan l Join item_copy ic ON ic.Barcode = l.Barcode Join item i ON ic.ItemID = i.ItemID Where l.Barcode = ?";
             PreparedStatement preparedStatement = conn.prepareStatement(sql);
             preparedStatement.setString(1, barcode);
 
@@ -241,11 +242,11 @@ public class DataBase_conn {
 
             while (resultSet.next()) {
                 String title_recived = resultSet.getString("Title");
-                String ISBN_recived = resultSet.getString("ISBN");
+                String ItemID_recived = resultSet.getString("ItemID");
                 String Date_of_loan = resultSet.getString("BorrowDate");
                 String Date_of_return = resultSet.getString("ReturnDate");
                 title.setText("Title: " + title_recived);
-                isbn.setText("ISBN: " + ISBN_recived);
+                isbn.setText("ItemID: " + ItemID_recived);
                 loan_date.setText("Date of Loan: " + Date_of_loan);
                 return_date.setText("Return Date: " + Date_of_return);
             }
@@ -259,7 +260,7 @@ public class DataBase_conn {
         final String USERNAME = "java";
         final String PASSWORD = "Javaex12";
 
-        DefaultTableModel model = new DefaultTableModel(new Object[]{"ISBN", "Title", "Type", "Location", "Availability", "Max_loan_weeks", "Director/Author", "Classification", "Publisher"}, 0);
+        DefaultTableModel model = new DefaultTableModel(new Object[]{"ItemID" ,"ISBN", "Title", "Type", "Location", "Availability", "Max_loan_weeks", "Director/Author", "Classification", "Publisher/Country"}, 0);
         try {
             Connection conn = DriverManager.getConnection(DB_URL, USERNAME, PASSWORD);
 
@@ -270,8 +271,8 @@ public class DataBase_conn {
 
             ResultSet resultSet = preparedStatement.executeQuery();
 
-
             while (resultSet.next()) {
+                String ItemID = resultSet.getString("ItemID");
                 String ISBN = resultSet.getString("ISBN");
                 String title = resultSet.getString("Title");
                 String type = resultSet.getString("Type");
@@ -280,8 +281,8 @@ public class DataBase_conn {
                 int Max_loan_weeks = resultSet.getInt("MaxLoan_Weeks");
                 String dir_auth = resultSet.getString("Director_Author");
                 String classification = resultSet.getString("Classification");
-                String publisher = resultSet.getString("Publisher");
-                model.addRow(new Object[]{ISBN, title, type, location, Availability, Max_loan_weeks, dir_auth, classification, publisher});
+                String publisher = resultSet.getString("Publisher_Country");
+                model.addRow(new Object[]{ItemID ,ISBN, title, type, location, Availability, Max_loan_weeks, dir_auth, classification, publisher});
             }
 
             stmt.close();
@@ -290,14 +291,61 @@ public class DataBase_conn {
         } catch (Exception e) {
             e.printStackTrace();
         }
-        return model;
+
+        // Makes the first column uneditable
+        DefaultTableModel uneditableModel = new DefaultTableModel() {
+            @Override
+            public int getColumnCount() {
+                return model.getColumnCount();
+            }
+
+            @Override
+            public int getRowCount() {
+                return model.getRowCount();
+            }
+
+            @Override
+            public Object getValueAt(int row, int column) {
+                if (column == 0) {
+                    return model.getValueAt(row, column);
+                } else {
+                    return model.getValueAt(row, column);
+                }
+            }
+
+            @Override
+            public void setValueAt(Object aValue, int row, int column) {
+                if (column == 0) {
+                    model.setValueAt(aValue, row, column);
+                } else {
+                    model.setValueAt(aValue, row, column);
+                }
+            }
+
+            @Override
+            public boolean isCellEditable(int row, int column) {
+                return column != 0;
+            }
+
+            @Override
+            public String getColumnName(int column) {
+                return model.getColumnName(column);
+            }
+
+            @Override
+            public Class<?> getColumnClass(int column) {
+                return model.getColumnClass(column);
+            }
+        };
+
+        return uneditableModel;
     }
     public DefaultTableModel search_results_copy_manage(String search_text) {
         final String DB_URL = "jdbc:mysql://localhost:3306/library";
         final String USERNAME = "java";
         final String PASSWORD = "Javaex12";
 
-        DefaultTableModel model = new DefaultTableModel(new Object[]{"ISBN", "Barcode", "IsReferenceCopy"}, 0);
+        DefaultTableModel model = new DefaultTableModel(new Object[]{"Barcode", "IsReferenceCopy", "ItemID"}, 0);
         try {
             Connection conn = DriverManager.getConnection(DB_URL, USERNAME, PASSWORD);
 
@@ -310,10 +358,10 @@ public class DataBase_conn {
 
 
             while (resultSet.next()) {
-                String ISBN = resultSet.getString("ISBN");
                 String Barcode = resultSet.getString("Barcode");
                 String IsReferenceCopy = resultSet.getString("IsReferenceCopy");
-                model.addRow(new Object[]{ISBN, Barcode, IsReferenceCopy});
+                String ItemID = resultSet.getString("ItemID");
+                model.addRow(new Object[]{Barcode, IsReferenceCopy, ItemID});
             }
 
             stmt.close();
@@ -322,7 +370,53 @@ public class DataBase_conn {
         } catch (Exception e) {
             e.printStackTrace();
         }
-        return model;
+        // Makes the first column uneditable
+        DefaultTableModel uneditableModel = new DefaultTableModel() {
+            @Override
+            public int getColumnCount() {
+                return model.getColumnCount();
+            }
+
+            @Override
+            public int getRowCount() {
+                return model.getRowCount();
+            }
+
+            @Override
+            public Object getValueAt(int row, int column) {
+                if (column == 0) {
+                    return model.getValueAt(row, column);
+                } else {
+                    return model.getValueAt(row, column);
+                }
+            }
+
+            @Override
+            public void setValueAt(Object aValue, int row, int column) {
+                if (column == 0) {
+                    model.setValueAt(aValue, row, column);
+                } else {
+                    model.setValueAt(aValue, row, column);
+                }
+            }
+
+            @Override
+            public boolean isCellEditable(int row, int column) {
+                return column != 0;
+            }
+
+            @Override
+            public String getColumnName(int column) {
+                return model.getColumnName(column);
+            }
+
+            @Override
+            public Class<?> getColumnClass(int column) {
+                return model.getColumnClass(column);
+            }
+        };
+
+        return uneditableModel;
     }
     public static void push_edits_item(JTable model) {
         final String DB_URL = "jdbc:mysql://localhost:3306/library";
@@ -330,17 +424,18 @@ public class DataBase_conn {
         final String PASSWORD = "Javaex12";
 
         for (int i = 0; i < model.getRowCount(); i++){
-            String ISBN = (String) model.getValueAt(i, 0);
-            String Title = (String) model.getValueAt(i, 1);
-            String Type = (String) model.getValueAt(i, 2);
-            String Location = (String) model.getValueAt(i, 3);
-            int Availability =(Integer) model.getValueAt(i, 4);
-            int Max_loan_weeks = (Integer) model.getValueAt(i, 5);
-            String Director_Author = (String) model.getValueAt(i, 6);
-            String Classification = (String) model.getValueAt(i, 7);
-            String Publisher = (String) model.getValueAt(i, 8);
+            String ItemID = (String) model.getValueAt(i, 0);
+            String ISBN = (String) model.getValueAt(i, 1);
+            String Title = (String) model.getValueAt(i, 2);
+            String Type = (String) model.getValueAt(i, 3);
+            String Location = (String) model.getValueAt(i, 4);
+            int Availability =(Integer) model.getValueAt(i, 5);
+            int Max_loan_weeks = (Integer) model.getValueAt(i, 6);
+            String Director_Author = (String) model.getValueAt(i, 7);
+            String Classification = (String) model.getValueAt(i, 8);
+            String Publisher_Country = (String) model.getValueAt(i, 9);
 
-            String updateQuery = "UPDATE item SET ISBN=?, Title=?, Type=?, Location=?, Availability=?, MaxLoan_Weeks=?, Classification=?, Director_Author=?, Publisher=? WHERE ISBN=?";
+            String updateQuery = "UPDATE item SET ISBN=?, Title=?, Type=?, Location=?, Availability=?, MaxLoan_Weeks=?, Classification=?, Director_Author=?, Publisher_Country=? WHERE ItemID=?";
             try (Connection conn = DriverManager.getConnection(DB_URL, USERNAME, PASSWORD);
                  PreparedStatement stmt = conn.prepareStatement(updateQuery)) {
                 stmt.setString(1, ISBN);
@@ -351,8 +446,8 @@ public class DataBase_conn {
                 stmt.setInt(6, Max_loan_weeks);
                 stmt.setString(7, Classification);
                 stmt.setString(8, Director_Author);
-                stmt.setString(9, Publisher);
-                stmt.setString(10, ISBN);
+                stmt.setString(9, Publisher_Country);
+                stmt.setString(10, ItemID);
                 stmt.executeUpdate();
 
 
@@ -370,19 +465,17 @@ public class DataBase_conn {
         final String PASSWORD = "Javaex12";
 
         for (int i = 0; i < model.getRowCount(); i++){
-            String ISBN = (String) model.getValueAt(i, 0);
-            String Barcode = (String) model.getValueAt(i, 1);
-            String IsReferenceCopy = (String) model.getValueAt(i, 2);
+            String Barcode = (String) model.getValueAt(i, 0);
+            String IsReferenceCopy = (String) model.getValueAt(i, 1);
+            String ItemID = (String) model.getValueAt(i, 2);
 
-            String updateQuery = "UPDATE item_copy SET Barcode = ?, ISBN = ?, IsReferenceCopy = ? WHERE Barcode = ?";
+            String updateQuery = "UPDATE item_copy SET Barcode = ?, ItemID = ?, IsReferenceCopy = ? WHERE Barcode = ?";
             try (Connection conn = DriverManager.getConnection(DB_URL, USERNAME, PASSWORD);
                  PreparedStatement stmt = conn.prepareStatement(updateQuery)) {
                 stmt.setString(1, Barcode);
-                stmt.setString(2, ISBN);
+                stmt.setString(2, ItemID);
                 stmt.setString(3, IsReferenceCopy);
                 stmt.setString(4, Barcode);
-
-                System.out.println(stmt.toString());
                 stmt.executeUpdate();
 
 

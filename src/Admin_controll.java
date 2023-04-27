@@ -6,6 +6,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
+import javax.swing.table.DefaultTableModel;
 
 public class Admin_controll extends JDialog{
     private JButton view_loans_btn;
