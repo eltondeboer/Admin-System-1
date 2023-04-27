@@ -455,6 +455,12 @@ public class Admin_controll extends JDialog{
                     JOptionPane.showMessageDialog(Admin_controll.this, "Barcode not in system", "Error", JOptionPane.INFORMATION_MESSAGE);
                 } else if (result.equals("Copies")) {
                     JOptionPane.showMessageDialog(Admin_controll.this, "The book you are trying to loan is not available. Check the barcode again", "Error", JOptionPane.INFORMATION_MESSAGE);
+                } else if (result.equals("Researcher")) {
+                    JOptionPane.showMessageDialog(Admin_controll.this, "Researcher can loan up to 20 books only", "Error", JOptionPane.INFORMATION_MESSAGE);
+                } else if (result.equals("Teacher")) {
+                    JOptionPane.showMessageDialog(Admin_controll.this, "Teacher can loan up to 10 books only", "Error", JOptionPane.INFORMATION_MESSAGE);
+                } else if (result.equals("Student")) {
+                    JOptionPane.showMessageDialog(Admin_controll.this, "Student can loan up to 5 books only", "Error", JOptionPane.INFORMATION_MESSAGE);
                 } else {
                     JOptionPane.showMessageDialog(Admin_controll.this, "Book Loaned Successfully", "Success", JOptionPane.INFORMATION_MESSAGE);
                     dbconn.get_recipt(barcode, receipt_title_label, receipt_ISBN_label, receipt_lDate_labe, receipt_rDate_label);

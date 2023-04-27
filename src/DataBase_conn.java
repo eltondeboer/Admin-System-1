@@ -52,7 +52,7 @@ public class DataBase_conn {
             Connection conn = DriverManager.getConnection(DB_URL, USERNAME, PASSWORD);
 
             Statement stmt = conn.createStatement();
-            String sql = "SELECT i.ISBN, i.Title, i.Type, i.Director_Author, i.Publisher_Country, l.ReturnDate FROM Loan l Join item_copy ic on l.Barcode = ic.Barcode Join item i on ic.ItemID = i.ItemID Where userID=? and curdate() > l.ReturnDate";
+            String sql = "SELECT i.ISBN, i.Title, i.Type, i.Director_Author, i.Publisher_Country, l.ReturnDate FROM Loan l Join item_copy ic on l.Barcode = ic.Barcode Join item i on ic.ItemID = i.ItemID Where userID=? and curdate() > l.ReturnDate and l.Returned = 0";
             PreparedStatement preparedStatement = conn.prepareStatement(sql);
             preparedStatement.setString(1, user.user_id);
 
@@ -219,6 +219,12 @@ public class DataBase_conn {
                 return "Refrence";
             } else if (ex.getMessage().contains("Error: The book you are trying to loan is not available.")) {
                 return "Copies";
+            } else if (ex.getMessage().contains("Researcher can loan up to 20 books only")) {
+                return "Researcher";
+            } else if (ex.getMessage().contains("Teacher can loan up to 10 books only")) {
+                return "Teacher";
+            } else if (ex.getMessage().contains("Student can loan up to 5 books only")) {
+                return "Student";
             } else {
                 return "Barcode";
             }
