@@ -450,16 +450,17 @@ public class Admin_controll extends JDialog{
                 String barcode = loan_BC_tf.getText();
                 String result = dbconn.loan_book(loan_BC_tf, user1);
                 if(result.equals("Refrence")) {
-                    JOptionPane.showMessageDialog(Admin_controll.this, "This is a Reference Copy and cannot be loaned", "Error", JOptionPane.INFORMATION_MESSAGE);
+                    JOptionPane.showMessageDialog(Admin_controll.this, "The book you are trying to loan is a reference copy and cannot be loaned.", "Error", JOptionPane.INFORMATION_MESSAGE);
                 } else if (result.equals("Barcode")) {
                     JOptionPane.showMessageDialog(Admin_controll.this, "Barcode not in system", "Error", JOptionPane.INFORMATION_MESSAGE);
+                } else if (result.equals("Copies")) {
+                    JOptionPane.showMessageDialog(Admin_controll.this, "The book you are trying to loan is not available. Check the barcode again", "Error", JOptionPane.INFORMATION_MESSAGE);
                 } else {
                     JOptionPane.showMessageDialog(Admin_controll.this, "Book Loaned Successfully", "Success", JOptionPane.INFORMATION_MESSAGE);
-
+                    dbconn.get_recipt(barcode, receipt_title_label, receipt_ISBN_label, receipt_lDate_labe, receipt_rDate_label);
+                    tabbedPane1.setSelectedIndex(12);
                 }
                 Jtble_View_Loans.setModel(dbconn.view_loans_table(user1));
-                dbconn.get_recipt(barcode, receipt_title_label, receipt_ISBN_label, receipt_lDate_labe, receipt_rDate_label);
-                tabbedPane1.setSelectedIndex(12);
                 loan_BC_tf.setText("");
             }
         });
@@ -467,7 +468,7 @@ public class Admin_controll extends JDialog{
             @Override
             public void keyPressed(KeyEvent e) {
                 if (e.getKeyCode()==KeyEvent.VK_ENTER){
-                    return_item_btn.doClick();
+                    loan_item_btn.doClick();
                 }
             }
         });

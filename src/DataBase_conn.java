@@ -87,7 +87,7 @@ public class DataBase_conn {
         final String USERNAME = "java";
         final String PASSWORD = "Javaex12";
 
-        NonEditableTableModel model = new NonEditableTableModel(new Object[]{"Title", "Type", "Director/Author", "Classification", "Publisher/Country", "ISBN", "Age Restriction"}, 0);
+        NonEditableTableModel model = new NonEditableTableModel(new Object[]{"Title", "Type", "Director/Author", "Classification", "Publisher/Country", "ISBN", "Age Restriction", "Available Copies"}, 0);
         try {
             Connection conn = DriverManager.getConnection(DB_URL, USERNAME, PASSWORD);
 
@@ -107,7 +107,8 @@ public class DataBase_conn {
                 String publisher = resultSet.getString("Publisher_Country");
                 String ISBN = resultSet.getString("ISBN");
                 String Age_restriction = resultSet.getString("Age_Restriction");
-                model.addRow(new Object[]{title, type, dir_auth, classification, publisher, ISBN, Age_restriction});
+                String Available = resultSet.getString("Availability");
+                model.addRow(new Object[]{title, type, dir_auth, classification, publisher, ISBN, Age_restriction, Available});
             }
 
             if (resultSet == null) {
@@ -213,8 +214,11 @@ public class DataBase_conn {
             return "Success";
 
         } catch (SQLException ex) {
-            if (ex.getMessage().contains("Refrence Copy can not be loaned")) {
+            System.out.println(ex.getMessage());
+            if (ex.getMessage().contains("Error: The book you are trying to loan is a reference copy and cannot be loaned.")) {
                 return "Refrence";
+            } else if (ex.getMessage().contains("Error: The book you are trying to loan is not available.")) {
+                return "Copies";
             } else {
                 return "Barcode";
             }
