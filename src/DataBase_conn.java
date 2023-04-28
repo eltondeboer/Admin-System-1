@@ -3,12 +3,11 @@ import javax.swing.table.DefaultTableModel;
 import java.sql.*;
 
 public class DataBase_conn {
+    private static final String DB_URL = "jdbc:mysql://localhost:3306/library";
+    private static final String USERNAME = "java";
+    private static final String PASSWORD = "Javaex12";
 
     public DefaultTableModel view_loans_table(User user) {
-
-        final String DB_URL = "jdbc:mysql://localhost:3306/library";
-        final String USERNAME = "java";
-        final String PASSWORD = "Javaex12";
 
         NonEditableTableModel model = new NonEditableTableModel(new Object[]{"Title", "Type", "Director/Author", "Publisher/Country", "ReturnDate", "ISBN"}, 0);
         try {
@@ -17,7 +16,7 @@ public class DataBase_conn {
             Statement stmt = conn.createStatement();
             String sql = "SELECT i.ISBN, i.Title, i.Type, i.Director_Author, i.Publisher_Country, l.ReturnDate FROM Loan l Join item_copy ic on l.Barcode = ic.Barcode Join item i on ic.ItemID = i.ItemID Where userID=? and Returned = 0";
             PreparedStatement preparedStatement = conn.prepareStatement(sql);
-            preparedStatement.setString(1, user.user_id);
+            preparedStatement.setString(1, user.getUserId());
 
             ResultSet resultSet = preparedStatement.executeQuery();
 
@@ -43,10 +42,6 @@ public class DataBase_conn {
     }
     public DefaultTableModel view_late_userReturns_table(User user) {
 
-        final String DB_URL = "jdbc:mysql://localhost:3306/library";
-        final String USERNAME = "java";
-        final String PASSWORD = "Javaex12";
-
         NonEditableTableModel model = new NonEditableTableModel(new Object[]{"Title", "Type", "Director/Author", "Publisher/Country", "ReturnDate", "ISBN"}, 0);
         try {
             Connection conn = DriverManager.getConnection(DB_URL, USERNAME, PASSWORD);
@@ -54,7 +49,7 @@ public class DataBase_conn {
             Statement stmt = conn.createStatement();
             String sql = "SELECT i.ISBN, i.Title, i.Type, i.Director_Author, i.Publisher_Country, l.ReturnDate FROM Loan l Join item_copy ic on l.Barcode = ic.Barcode Join item i on ic.ItemID = i.ItemID Where userID=? and curdate() > l.ReturnDate and l.Returned = 0";
             PreparedStatement preparedStatement = conn.prepareStatement(sql);
-            preparedStatement.setString(1, user.user_id);
+            preparedStatement.setString(1, user.getUserId());
 
             ResultSet resultSet = preparedStatement.executeQuery();
 
@@ -82,10 +77,6 @@ public class DataBase_conn {
     //Uses the stored procedure in the database to search and returns a table model with the results.
     public DefaultTableModel search_results(String search_text, JLabel txt_label) {
         txt_label.setText("Search above for title, type or clasification");
-
-        final String DB_URL = "jdbc:mysql://localhost:3306/library";
-        final String USERNAME = "java";
-        final String PASSWORD = "Javaex12";
 
         NonEditableTableModel model = new NonEditableTableModel(new Object[]{"Title", "Type", "Director/Author", "Classification", "Publisher/Country", "ISBN", "Age Restriction", "Available Copies"}, 0);
         try {
@@ -132,10 +123,6 @@ public class DataBase_conn {
                           JTextField email_tf,
                           JPasswordField pass_pf){
 
-        final String DB_URL = "jdbc:mysql://localhost:3306/library";
-        final String USERNAME = "java";
-        final String PASSWORD = "Javaex12";
-
         String name = name_tf.getText();
         String phone = phone_tf.getText();
         String email = email_tf.getText();
@@ -161,14 +148,15 @@ public class DataBase_conn {
                 System.out.println("User added succesfully");
             }
 
+            stmt.close();
+            conn.close();
+
         } catch (Exception e) {
             e.printStackTrace();
         }
+
     }
     public boolean return_loan(JTextField return_BC_tf, User user){
-        final String DB_URL = "jdbc:mysql://localhost:3306/library";
-        final String USERNAME = "java";
-        final String PASSWORD = "Javaex12";
 
         String barcode = return_BC_tf.getText();
 
@@ -179,9 +167,13 @@ public class DataBase_conn {
             String sql = "UPDATE loan SET Returned = 1 WHERE (Barcode = ?) and userID = ?;";
             PreparedStatement preparedStatement = conn.prepareStatement(sql);
             preparedStatement.setString(1, barcode);
-            preparedStatement.setString(2, user.user_id);
+            preparedStatement.setString(2, user.getUserId());
 
             int rows_effected = preparedStatement.executeUpdate();
+
+            stmt.close();
+            conn.close();
+
             if (rows_effected == 0){
                 return false;
             }
@@ -189,15 +181,13 @@ public class DataBase_conn {
                 return true;
             }
 
+
         } catch (Exception e) {
             e.printStackTrace();
             return false;
         }
     }
     public String loan_book (JTextField loan_BC_tf, User user){
-        final String DB_URL = "jdbc:mysql://localhost:3306/library";
-        final String USERNAME = "java";
-        final String PASSWORD = "Javaex12";
 
         String barcode = loan_BC_tf.getText();
 
@@ -207,7 +197,7 @@ public class DataBase_conn {
             Statement stmt = conn.createStatement();
             String sql = "INSERT INTO loan (userID, Barcode, BorrowDate, Returned) VALUES (?, ?, CURDATE(), '0');";
             PreparedStatement preparedStatement = conn.prepareStatement(sql);
-            preparedStatement.setString(1, user.user_id);
+            preparedStatement.setString(1, user.getUserId());
             preparedStatement.setString(2, barcode);
 
             preparedStatement.executeUpdate();
@@ -236,10 +226,6 @@ public class DataBase_conn {
                               JLabel loan_date,
                               JLabel return_date){
 
-        final String DB_URL = "jdbc:mysql://localhost:3306/library";
-        final String USERNAME = "java";
-        final String PASSWORD = "Javaex12";
-
         try{
             Connection conn = DriverManager.getConnection(DB_URL, USERNAME, PASSWORD);
 
@@ -266,9 +252,6 @@ public class DataBase_conn {
         }
     }
     public DefaultTableModel search_results_item_manage(String search_text) {
-        final String DB_URL = "jdbc:mysql://localhost:3306/library";
-        final String USERNAME = "java";
-        final String PASSWORD = "Javaex12";
 
         DefaultTableModel model = new DefaultTableModel(new Object[]{"ItemID" ,"ISBN", "Title", "Type", "Location", "Availability", "Max_loan_weeks", "Director/Author", "Classification", "Publisher/Country"}, 0);
         try {
@@ -351,9 +334,6 @@ public class DataBase_conn {
         return uneditableModel;
     }
     public DefaultTableModel search_results_copy_manage(String search_text) {
-        final String DB_URL = "jdbc:mysql://localhost:3306/library";
-        final String USERNAME = "java";
-        final String PASSWORD = "Javaex12";
 
         DefaultTableModel model = new DefaultTableModel(new Object[]{"Barcode", "IsReferenceCopy", "ItemID"}, 0);
         try {
@@ -429,9 +409,6 @@ public class DataBase_conn {
         return uneditableModel;
     }
     public static void push_edits_item(JTable model) {
-        final String DB_URL = "jdbc:mysql://localhost:3306/library";
-        final String USERNAME = "java";
-        final String PASSWORD = "Javaex12";
 
         for (int i = 0; i < model.getRowCount(); i++){
             String ItemID = (String) model.getValueAt(i, 0);
@@ -469,10 +446,6 @@ public class DataBase_conn {
         }
     }
     public static void push_edits_item_copy(JTable model) {
-
-        final String DB_URL = "jdbc:mysql://localhost:3306/library";
-        final String USERNAME = "java";
-        final String PASSWORD = "Javaex12";
 
         for (int i = 0; i < model.getRowCount(); i++){
             String Barcode = (String) model.getValueAt(i, 0);

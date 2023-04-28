@@ -1,12 +1,12 @@
 import java.sql.*;
 
 public class User {
-    public String user_id;
-    public String name;
-    public String email;
-    public String phone;
-    public String password;
-    public String usertype;
+    private String user_id;
+    private String name;
+    private String email;
+    private String phone;
+    private String password;
+    private String usertype;
     public boolean signed_in = false;
 
     public boolean getAutenticateUser(String email1, String password1){
@@ -60,13 +60,30 @@ public class User {
         signed_in = false;
     }
     public boolean user_is_admin(){
-        if (usertype.equals("Admin")){
-            return true;
-        }
-        else{
-            return false;
-        }
+        return usertype.equals("Admin");
+    }
+    public String getUserId() {
+        return user_id;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public String getPhone() {
+        return phone;
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
+    public String getUserType() {
+        return usertype;
     }
 }
-
 
