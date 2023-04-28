@@ -6,6 +6,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
+import java.net.URL;
 import javax.swing.table.DefaultTableModel;
 
 public class Admin_controll extends JDialog{
@@ -129,6 +130,10 @@ public class Admin_controll extends JDialog{
         //Sets the windows title, content pane, size, makes it reziseable, relitive to parent object, and makes it close when closed.
         setTitle("Library System");
         setContentPane(Main_panel);
+        URL iconURL = Admin_controll.class.getResource("/library.png");
+        ImageIcon icon = new ImageIcon(iconURL);
+        setIconImage(icon.getImage());
+
         setMinimumSize(new Dimension(600, 500));
         setModal(true);
         setLocationRelativeTo(parent);
