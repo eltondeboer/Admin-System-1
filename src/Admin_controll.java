@@ -77,6 +77,7 @@ public class Admin_controll extends JDialog{
     private JLabel receipt_lDate_labe;
     private JLabel receipt_rDate_label;
     private JComboBox manage_JCB_selectTable;
+    private JScrollPane ScrollPane_View_loans;
 
 
     public void signed_out_state() {
