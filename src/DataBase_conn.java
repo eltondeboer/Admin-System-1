@@ -204,7 +204,6 @@ public class DataBase_conn {
             return "Success";
 
         } catch (SQLException ex) {
-            System.out.println(ex.getMessage());
             if (ex.getMessage().contains("Error: The book you are trying to loan is a reference copy and cannot be loaned.")) {
                 return "Refrence";
             } else if (ex.getMessage().contains("Error: The book you are trying to loan is not available.")) {
