@@ -723,4 +723,31 @@ DataBase_conn {
             e.printStackTrace();
         }
     }
+    public void send_reminder_email() {
+
+        try {
+            Connection conn = DriverManager.getConnection(DB_URL, USERNAME, PASSWORD);
+
+            Statement stmt = conn.createStatement();
+            String sql = "SELECT * FROM library.people_to_remind;";
+            PreparedStatement preparedStatement = conn.prepareStatement(sql);
+
+            ResultSet resultSet = preparedStatement.executeQuery();
+
+
+            while (resultSet.next()) {
+                String userName = resultSet.getString("userName");
+                String userMail = resultSet.getString("userMail");
+                String returnDate = resultSet.getString("ReturnDate");
+                String delayWeeks = resultSet.getString("Delay_Weeks");
+                System.out.println("Hi " + userName + "\nYou have a item which is delayed... The book was supposed to be returned by " + returnDate + " it is now delayed by " + delayWeeks + " weeks. Please return book directly \n Email was sent to : " + userMail);
+            }
+
+            stmt.close();
+            conn.close();
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
 }
