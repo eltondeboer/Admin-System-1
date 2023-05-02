@@ -1,13 +1,14 @@
 import javax.swing.*;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
+import javax.swing.table.TableColumn;
+import javax.swing.table.TableColumnModel;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.net.URL;
-import javax.swing.table.DefaultTableModel;
 
 public class Admin_controll extends JDialog{
     private JButton view_loans_btn;
@@ -53,11 +54,11 @@ public class Admin_controll extends JDialog{
     private JPanel Reserve_item;
     private JLabel SR_for_label;
     private JTable Jtble_search_results;
-    private JTable table5;
+    private JTable reserve_Jtable_searchResults;
     private JButton reserveSelectedButton;
     private JButton manage_btn_search;
-    private JTextField textField5;
-    private JButton button2;
+    private JTextField reserve_tf_searchterm;
+    private JButton reserve_BTN_search;
     private JTextField reg_TF_name;
     private JTextField reg_TF_phone;
     private JTextField reg_TF_email;
@@ -146,6 +147,7 @@ public class Admin_controll extends JDialog{
         tabbedPane1.setSelectedIndex(9);
         manage_JCB_selectTable.addItem("item");
         manage_JCB_selectTable.addItem("item_copy");
+        manage_JCB_selectTable.addItem("user");
 
 
         //When user presses login data gets checked against the database through function "getAutenticateUser(email, password);"
@@ -492,9 +494,13 @@ public class Admin_controll extends JDialog{
                 if(selected.equals("item")){
                     manage_JTble_searchresults.setModel(dbconn.search_results_item_manage(searchterm));
                 }
-                else {
+                else if (selected.equals("item_copy")) {
                     manage_JTble_searchresults.setModel(dbconn.search_results_copy_manage(searchterm));
                 }
+                else {
+                    manage_JTble_searchresults.setModel(dbconn.search_results_user_manage(searchterm));
+                }
+
             }
         });
         manage_tf_search.addKeyListener(new KeyAdapter() {
@@ -508,6 +514,7 @@ public class Admin_controll extends JDialog{
         pushEditsButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
+                //Defines which table is selected through a dropdown
                 String selected = (String)manage_JCB_selectTable.getSelectedItem();
                 int result = JOptionPane.showConfirmDialog(Admin_controll.this, "Are you sure you want to update the database?", "Confirmation", JOptionPane.YES_NO_OPTION);
                 if(selected.equals("item")){
@@ -520,7 +527,7 @@ public class Admin_controll extends JDialog{
                         manage_btn_search.doClick();
                     }
                 }
-                else{
+                else if(selected.equals("item_copy")){
                     if (result == JOptionPane.YES_OPTION) {
                         dbconn.push_edits_item_copy(manage_JTble_searchresults);
                         JOptionPane.showMessageDialog(Admin_controll.this, "Database updated Successfully", "Success", JOptionPane.INFORMATION_MESSAGE);
@@ -529,6 +536,105 @@ public class Admin_controll extends JDialog{
                         JOptionPane.showMessageDialog(Admin_controll.this, "Update cancelled.", "Cancelled", JOptionPane.INFORMATION_MESSAGE);
                         manage_btn_search.doClick();
                     }
+                }
+                else{
+                    if (result == JOptionPane.YES_OPTION) {
+                        dbconn.push_edits_user(manage_JTble_searchresults);
+                        JOptionPane.showMessageDialog(Admin_controll.this, "Database updated Successfully", "Success", JOptionPane.INFORMATION_MESSAGE);
+                    }
+                    else {
+                        JOptionPane.showMessageDialog(Admin_controll.this, "Update cancelled.", "Cancelled", JOptionPane.INFORMATION_MESSAGE);
+                        manage_btn_search.doClick();
+                    }
+                }
+            }
+        });
+        deleteSelectedButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                String selected = (String)manage_JCB_selectTable.getSelectedItem();
+                int selectedRow = manage_JTble_searchresults.getSelectedRow();
+                if (selected.equals("item")){
+                    int result = JOptionPane.showConfirmDialog(Admin_controll.this, "Are you sure you want to delete item? OBS: Corresponding item copies will also be deleted", "Confirmation", JOptionPane.YES_NO_OPTION);
+                    if (selectedRow != -1) {
+                        // Get the value of the first column in the selected row
+                        Object value = manage_JTble_searchresults.getValueAt(selectedRow, 0);
+                        if (value != null && result == JOptionPane.YES_OPTION) {
+                            int ItemID = Integer.parseInt(value.toString());
+                            dbconn.delete_item(ItemID);
+                            JOptionPane.showMessageDialog(Admin_controll.this, "Item deleted successfully", "Success", JOptionPane.INFORMATION_MESSAGE);
+                            manage_btn_search.doClick();
+                        }
+                    }
+                }
+
+                else if (selected.equals("item_copy")){
+                    int result = JOptionPane.showConfirmDialog(Admin_controll.this, "Are you sure you want to delete item copy?", "Confirmation", JOptionPane.YES_NO_OPTION);
+                    if (selectedRow != -1) {
+                        // Get the value of the first column in the selected row
+                        Object value = manage_JTble_searchresults.getValueAt(selectedRow, 0);
+                        if (value != null && result == JOptionPane.YES_OPTION) {
+                            String Barcode = (String) value;
+                            dbconn.delete_item_copy(Barcode);
+                            JOptionPane.showMessageDialog(Admin_controll.this, "Item deleted successfully", "Success", JOptionPane.INFORMATION_MESSAGE);
+                            manage_btn_search.doClick();
+                        }
+                    }
+                }
+
+                else if (selected.equals("user")){
+                    int result = JOptionPane.showConfirmDialog(Admin_controll.this, "Are you sure you want to delete user? OBS: Corresponding loans, and reservations will also be deleted", "Confirmation", JOptionPane.YES_NO_OPTION);
+                    if (selectedRow != -1) {
+                        // Get the value of the first column in the selected row
+                        Object value = manage_JTble_searchresults.getValueAt(selectedRow, 0);
+                        if (value != null && result == JOptionPane.YES_OPTION) {
+                            int UserID = Integer.parseInt(value.toString());
+                            dbconn.delete_user(UserID);
+                            JOptionPane.showMessageDialog(Admin_controll.this, "Item deleted successfully", "Success", JOptionPane.INFORMATION_MESSAGE);
+                            manage_btn_search.doClick();
+                        }
+                    }
+                }
+            }
+        });
+
+        reserve_BTN_search.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                String searchterm = reserve_tf_searchterm.getText();
+                reserve_Jtable_searchResults.setModel(dbconn.search_results_reservation(searchterm));
+                // Hides the ItemID column
+                TableColumnModel columnModel = reserve_Jtable_searchResults.getColumnModel();
+                TableColumn firstColumn = columnModel.getColumn(0);
+                firstColumn.setMinWidth(0);
+                firstColumn.setMaxWidth(0);
+
+            }
+        });
+        reserve_tf_searchterm.addKeyListener(new KeyAdapter() {
+            @Override
+            public void keyPressed(KeyEvent e) {
+                if (e.getKeyCode()==KeyEvent.VK_ENTER){
+                    reserve_BTN_search.doClick();
+                }
+            }
+        });
+        reserveSelectedButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                int selectedRow = reserve_Jtable_searchResults.getSelectedRow();
+                if (selectedRow != -1) {
+                    // Get the value of the first column in the selected row
+                    Object value = reserve_Jtable_searchResults.getValueAt(selectedRow, 0);
+                    if (value != null) {
+                        int intValue = Integer.parseInt(value.toString());
+                        dbconn.add_reservation(intValue, user1);
+                        JOptionPane.showMessageDialog(Admin_controll.this, "Reservation added Successfully", "Success", JOptionPane.INFORMATION_MESSAGE);
+
+                    }
+                }
+                else{
+                    JOptionPane.showMessageDialog(Admin_controll.this, "No item selected", "Error", JOptionPane.INFORMATION_MESSAGE);
                 }
             }
         });

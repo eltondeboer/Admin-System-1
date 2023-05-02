@@ -1,8 +1,11 @@
+import com.sun.net.httpserver.Authenticator;
+
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import java.sql.*;
 
-public class DataBase_conn {
+public class
+DataBase_conn {
     private static final String DB_URL = "jdbc:mysql://localhost:3306/library";
     private static final String USERNAME = "java";
     private static final String PASSWORD = "Javaex12";
@@ -407,6 +410,84 @@ public class DataBase_conn {
 
         return uneditableModel;
     }
+
+    public DefaultTableModel search_results_user_manage(String search_text) {
+
+        DefaultTableModel model = new DefaultTableModel(new Object[]{"UserID", "UserName", "UserType", "UserMail", "UserPhone"}, 0);
+        try {
+            Connection conn = DriverManager.getConnection(DB_URL, USERNAME, PASSWORD);
+
+            Statement stmt = conn.createStatement();
+            String sql = "call library.sp_user_search(?);";
+            PreparedStatement preparedStatement = conn.prepareStatement(sql);
+            preparedStatement.setString(1, search_text);
+
+            ResultSet resultSet = preparedStatement.executeQuery();
+
+
+            while (resultSet.next()) {
+                String UserID = resultSet.getString("userID");
+                String UserName = resultSet.getString("userName");
+                String UserType = resultSet.getString("userType");
+                String UserMail = resultSet.getString("userMail");
+                String UserPhone = resultSet.getString("userPhoneNumber");
+                model.addRow(new Object[]{UserID, UserName, UserType, UserMail, UserPhone});
+            }
+
+            stmt.close();
+            conn.close();
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        // Makes the first column uneditable
+        DefaultTableModel uneditableModel = new DefaultTableModel() {
+            @Override
+            public int getColumnCount() {
+                return model.getColumnCount();
+            }
+
+            @Override
+            public int getRowCount() {
+                return model.getRowCount();
+            }
+
+            @Override
+            public Object getValueAt(int row, int column) {
+                if (column == 0) {
+                    return model.getValueAt(row, column);
+                } else {
+                    return model.getValueAt(row, column);
+                }
+            }
+
+            @Override
+            public void setValueAt(Object aValue, int row, int column) {
+                if (column == 0) {
+                    model.setValueAt(aValue, row, column);
+                } else {
+                    model.setValueAt(aValue, row, column);
+                }
+            }
+
+            @Override
+            public boolean isCellEditable(int row, int column) {
+                return column != 0;
+            }
+
+            @Override
+            public String getColumnName(int column) {
+                return model.getColumnName(column);
+            }
+
+            @Override
+            public Class<?> getColumnClass(int column) {
+                return model.getColumnClass(column);
+            }
+        };
+
+        return uneditableModel;
+    }
     public static void push_edits_item(JTable model) {
 
         for (int i = 0; i < model.getRowCount(); i++){
@@ -467,6 +548,179 @@ public class DataBase_conn {
                 throw new RuntimeException(e);
             }
 
+        }
+    }
+
+    public static void push_edits_user(JTable model) {
+
+        for (int i = 0; i < model.getRowCount(); i++){
+            String userID = (String) model.getValueAt(i, 0);
+            String userName = (String) model.getValueAt(i, 1);
+            String userType = (String) model.getValueAt(i, 2);
+            String userMail = (String) model.getValueAt(i, 3);
+            String userPhoneNumber = (String) model.getValueAt(i, 4);
+
+            String updateQuery = "UPDATE user SET userName=?, userType=?, userMail=?, userPhoneNumber=? WHERE userID=?";
+            try (Connection conn = DriverManager.getConnection(DB_URL, USERNAME, PASSWORD);
+                 PreparedStatement stmt = conn.prepareStatement(updateQuery)) {
+                stmt.setString(1, userName);
+                stmt.setString(2, userType);
+                stmt.setString(3, userMail);
+                stmt.setString(4, userPhoneNumber);
+                stmt.setString(5, userID);
+                stmt.executeUpdate();
+
+
+                stmt.close();
+                conn.close();
+            } catch (SQLException e) {
+                throw new RuntimeException(e);
+            }
+        }
+    }
+
+    public DefaultTableModel search_results_reservation(String search_text) {
+
+        NonEditableTableModel model = new NonEditableTableModel(new Object[]{"ItemID", "Title", "Type", "Director/Author", "Classification", "Publisher/Country", "ISBN", "Age Restriction", "Available Copies"}, 0);
+        try {
+            Connection conn = DriverManager.getConnection(DB_URL, USERNAME, PASSWORD);
+
+            Statement stmt = conn.createStatement();
+            String sql = "call library.sp_item_search(?);";
+            PreparedStatement preparedStatement = conn.prepareStatement(sql);
+            preparedStatement.setString(1, search_text);
+
+            ResultSet resultSet = preparedStatement.executeQuery();
+
+
+            while (resultSet.next()) {
+                int ItemID = resultSet.getInt("ItemID");
+                String title = resultSet.getString("Title");
+                String type = resultSet.getString("Type");
+                String dir_auth = resultSet.getString("Director_Author");
+                String classification = resultSet.getString("Classification");
+                String publisher = resultSet.getString("Publisher_Country");
+                String ISBN = resultSet.getString("ISBN");
+                String Age_restriction = resultSet.getString("Age_Restriction");
+                String Available = resultSet.getString("Availability");
+                model.addRow(new Object[]{ItemID, title, type, dir_auth, classification, publisher, ISBN, Age_restriction, Available});
+            }
+
+            stmt.close();
+            conn.close();
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return model;
+    }
+    public void add_reservation(int ItemID, User user ){
+
+
+        try{
+            Connection conn = DriverManager.getConnection(DB_URL, USERNAME, PASSWORD);
+
+            Statement stmt = conn.createStatement();
+            String sql = "INSERT INTO `library`.`reservation` (`ItemID`, `UserID`, `DateReserved`, `IsActive`) VALUES (?, ?, curdate(), '1');";
+            PreparedStatement preparedStatement = conn.prepareStatement(sql);
+            preparedStatement.setInt(1, ItemID);
+            preparedStatement.setString(2, user.getUserId());
+
+            int rows_effected = preparedStatement.executeUpdate();
+            if (rows_effected == 0){
+                System.out.println("Failed to add new Reserveation");
+            }
+            else{
+                System.out.println("Reserveation added succesfully");
+            }
+
+            stmt.close();
+            conn.close();
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+    public void delete_item(int ItemID) {
+
+        try {
+            Connection conn = DriverManager.getConnection(DB_URL, USERNAME, PASSWORD);
+
+            Statement stmt = conn.createStatement();
+            String sql = "DELETE FROM `library`.`item_copy` WHERE (`ItemID` = ?);";
+            PreparedStatement preparedStatement = conn.prepareStatement(sql);
+            preparedStatement.setInt(1, ItemID);
+
+            preparedStatement.executeUpdate();
+
+            Statement stmt2 = conn.createStatement();
+            String sql2 = "DELETE FROM `library`.`item` WHERE (`ItemID` = ?);";
+            PreparedStatement preparedStatement2 = conn.prepareStatement(sql2);
+            preparedStatement2.setInt(1, ItemID);
+
+            preparedStatement2.executeUpdate();
+
+            stmt.close();
+            stmt2.close();
+            conn.close();
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+    public void delete_item_copy(String Barcode) {
+
+        try {
+            Connection conn = DriverManager.getConnection(DB_URL, USERNAME, PASSWORD);
+
+            Statement stmt = conn.createStatement();
+            String sql = "DELETE FROM `library`.`item_copy` WHERE (`Barcode` = ?);";
+            PreparedStatement preparedStatement = conn.prepareStatement(sql);
+            preparedStatement.setString(1, Barcode);
+
+            preparedStatement.executeUpdate();
+
+            stmt.close();
+            conn.close();
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+    public void delete_user(int UserID) {
+
+        try {
+            Connection conn = DriverManager.getConnection(DB_URL, USERNAME, PASSWORD);
+
+            Statement stmt = conn.createStatement();
+            String sql = "DELETE FROM `library`.`reservation` WHERE (`UserID` = ?);";
+            PreparedStatement preparedStatement = conn.prepareStatement(sql);
+            preparedStatement.setInt(1, UserID);
+
+            preparedStatement.executeUpdate();
+
+            Statement stmt2 = conn.createStatement();
+            String sql2 = "DELETE FROM `library`.`loan` WHERE (`UserID` = ?);";
+            PreparedStatement preparedStatement2 = conn.prepareStatement(sql2);
+            preparedStatement2.setInt(1, UserID);
+
+            preparedStatement2.executeUpdate();
+
+            Statement stmt3 = conn.createStatement();
+            String sql3 = "DELETE FROM `library`.`user` WHERE (`UserID` = ?);";
+            PreparedStatement preparedStatement3 = conn.prepareStatement(sql3);
+            preparedStatement3.setInt(1, UserID);
+
+            preparedStatement3.executeUpdate();
+
+            stmt.close();
+            stmt2.close();
+            stmt3.close();
+            conn.close();
+
+        } catch (Exception e) {
+            e.printStackTrace();
         }
     }
 }
