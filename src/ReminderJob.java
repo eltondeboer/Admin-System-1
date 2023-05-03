@@ -32,24 +32,56 @@ public class ReminderJob implements Job {
 
             ResultSet resultSet = preparedStatement.executeQuery();
 
+            System.out.println("\nLate Returns Reminders\n\n");
 
             while (resultSet.next()) {
                 String userName = resultSet.getString("userName");
-                String userMail = resultSet.getString("userMail");
+                String userEmail = resultSet.getString("userMail");
                 String returnDate = resultSet.getString("ReturnDate");
                 String delayWeeks = resultSet.getString("Delay_Weeks");
-                System.out.println("Hi " + userName + "\nYou have a item which is delayed... The book was supposed to be returned by " + returnDate + " it is now delayed by " + delayWeeks + " weeks. Please return book directly \n Email was sent to : " + userMail);
+
+                String subject_late = "Late return of item";
+                String body_late = "Hi " + userName + "\nYou have a item which is delayed... The book was supposed to be returned by " + returnDate + " it is now delayed by " + delayWeeks + " weeks. Please return book directly \nThank you,LTU Library\n Email was sent to : " + userEmail + "\n";
+
+                System.out.println(subject_late + "\n" + body_late + "\nSent to : " + userEmail);
             }
 
+            String query = "SELECT r.ReservationID, r.UserID, u.userName, u.userMail, i.Title " +
+                    "FROM reservation r " +
+                    "JOIN item i ON r.ItemID = i.ItemID " +
+                    "JOIN user u ON r.UserID = u.userID " +
+                    "WHERE r.IsActive = 1 AND i.Availability > 0";
             Statement stmt2 = conn.createStatement();
-            String sql2 = "INSERT INTO `library`.`email_reminder` (`sent`, `sent_timestamp`) VALUES ('true', ?);";
-            PreparedStatement preparedStatement2 = conn.prepareStatement(sql2);
-            preparedStatement2.setDate(1, sqlDate);
+            ResultSet rs = stmt2.executeQuery(query);
 
-            preparedStatement2.executeUpdate();
+            System.out.println("\nReservation Available Reminders\n\n");
+
+            // send email notifications to users
+            while (rs.next()) {
+                int reservationID = rs.getInt("ReservationID");
+                String title = rs.getString("Title");
+                String userEmail = rs.getString("userMail");
+                String userName = rs.getString("userName");
+                String bookTitle = rs.getString("Title");
+
+                String subject_reservation = "Item Available for Loaning #" + reservationID + " Title: " + title;
+                String body_reservation = "Hello "+ userName + ",\n\nThe book \"" + bookTitle + "\" is now available for pickup.\n\n" +
+                        "Please come to the library to check out the book as soon as possible.\n\n" +
+                        "Thank you,\nLTU Library \n";
+
+                System.out.println(subject_reservation + "\n" + body_reservation + "\nSent to : " + userEmail + "\n");
+            }
+
+            Statement stmt3 = conn.createStatement();
+            String sql3 = "INSERT INTO `library`.`email_reminder` (`sent`, `sent_timestamp`) VALUES ('true', ?);";
+            PreparedStatement preparedStatement3 = conn.prepareStatement(sql3);
+            preparedStatement3.setDate(1, sqlDate);
+
+            preparedStatement3.executeUpdate();
 
             stmt.close();
             stmt2.close();
+            stmt3.close();
             conn.close();
 
         } catch (Exception e) {
