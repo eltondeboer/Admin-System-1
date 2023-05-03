@@ -1,13 +1,12 @@
+import org.quartz.SchedulerException;
+
 import javax.swing.*;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import javax.swing.table.TableColumn;
 import javax.swing.table.TableColumnModel;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.KeyAdapter;
-import java.awt.event.KeyEvent;
+import java.awt.event.*;
 import java.net.URL;
 
 public class Admin_controll extends JDialog{
@@ -120,6 +119,7 @@ public class Admin_controll extends JDialog{
         super(parent);
         //Creates instant of user.
         User user1 = new User();
+        EmailReminder emailReminder = new EmailReminder();
         //Makes the searchbar not resize depending on window size
         Searchbar.setMaximumSize(new Dimension(Searchbar.getPreferredSize().width, Searchbar.getPreferredSize().height));
         Searchbar.setMinimumSize(new Dimension(Searchbar.getPreferredSize().width, Searchbar.getPreferredSize().height));
@@ -140,6 +140,21 @@ public class Admin_controll extends JDialog{
         setModal(true);
         setLocationRelativeTo(parent);
         setDefaultCloseOperation(DISPOSE_ON_CLOSE);
+        addWindowListener(new WindowAdapter() {
+            @Override
+            public void windowClosing(WindowEvent e) {
+                try {
+                    emailReminder.stopScheduler();
+                } catch (SchedulerException ex) {
+                    throw new RuntimeException(ex);
+                }
+            }
+            @Override
+            public void windowOpened(WindowEvent e) {
+                emailReminder.startScheduler();
+            }
+        });
+
         //Sets data from database in JTable and makes it non editable.
         //Customizes UI to hide tabs
         tabbedPane1.setUI(new HiddenTabbedPaneUI());
@@ -148,6 +163,8 @@ public class Admin_controll extends JDialog{
         manage_JCB_selectTable.addItem("item");
         manage_JCB_selectTable.addItem("item_copy");
         manage_JCB_selectTable.addItem("user");
+
+
 
 
         //When user presses login data gets checked against the database through function "getAutenticateUser(email, password);"
