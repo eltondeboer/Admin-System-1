@@ -16,7 +16,6 @@ public class ReminderJob implements Job {
     public void execute(JobExecutionContext jobExecutionContext) throws JobExecutionException {
 
         if (reminderSent()){
-            System.out.println("already ran");
             return;
         }
 
