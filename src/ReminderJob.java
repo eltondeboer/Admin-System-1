@@ -16,6 +16,7 @@ public class ReminderJob implements Job {
     public void execute(JobExecutionContext jobExecutionContext) throws JobExecutionException {
 
         if (reminderSent()){
+            System.out.println("System already ran");
             return;
         }
 
@@ -64,8 +65,8 @@ public class ReminderJob implements Job {
                 String bookTitle = rs.getString("Title");
 
                 String subject_reservation = "Item Available for Loaning #" + reservationID + " Title: " + title;
-                String body_reservation = "Hello "+ userName + ",\n\nThe book \"" + bookTitle + "\" is now available for pickup.\n\n" +
-                        "Please come to the library to check out the book as soon as possible.\n\n" +
+                String body_reservation = "Hello "+ userName + ",\n\nThe item \"" + bookTitle + "\" is now available for pickup.\n\n" +
+                        "Please come to the library to check out the item as soon as possible.\n\n" +
                         "Thank you,\nLTU Library \n";
 
                 System.out.println(subject_reservation + "\n" + body_reservation + "\nSent to : " + userEmail + "\n");
@@ -91,8 +92,6 @@ public class ReminderJob implements Job {
 
     public Boolean reminderSent(){
         LocalDate currentDate = LocalDate.now();
-        java.sql.Date sqlDate = java.sql.Date.valueOf(currentDate);
-
 
         try {
             Connection conn = DriverManager.getConnection(DB_URL, USERNAME, PASSWORD);

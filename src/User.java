@@ -82,7 +82,7 @@ public class User {
         return password;
     }
 
-    public String getUserType() {
+    public String getUsertype() {
         return usertype;
     }
 }

@@ -78,6 +78,32 @@ public class Admin_controll extends JDialog{
     private JLabel receipt_rDate_label;
     private JComboBox manage_JCB_selectTable;
     private JScrollPane ScrollPane_View_loans;
+    private JTextField add_tf_title;
+    private JTextField add_tf_classification;
+    private JTextField add_tf_dirAuth;
+    private JTextField add_tf_pubCountry;
+    private JTextField add_tf_ageRes;
+    private JTextField add_tf_actor;
+    private JTextField add_tf_ISBN;
+    private JTextField add_tf_location;
+    private JComboBox add_cb_type;
+    private JComboBox add_cb_maxLoan;
+    private JButton add_btn_newitem;
+    private JLabel add_label_details;
+    private JLabel add_lbl_title;
+    private JLabel add_lbl_classification;
+    private JLabel add_lbl_DirAuth;
+    private JLabel add_lbl_PubCounty;
+    private JLabel add_lbl_type;
+    private JLabel add_lbl_ageres;
+    private JLabel add_lbl_actor;
+    private JLabel add_lbl_isbn;
+    private JLabel add_lbl_Location;
+    private JLabel add_lbl_maxLoan;
+    private JPanel add_item_copy;
+    private JTextField addCopy_tf_barcode;
+    private JCheckBox addCopy_cb_refCopy;
+    private JButton addCopy_btn_add;
 
 
     public void signed_out_state() {
@@ -653,6 +679,114 @@ public class Admin_controll extends JDialog{
                 else{
                     JOptionPane.showMessageDialog(Admin_controll.this, "No item selected", "Error", JOptionPane.INFORMATION_MESSAGE);
                 }
+            }
+        });
+        add_btn_newitem.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                String title = add_tf_title.getText().trim();
+                String actor = add_tf_actor.getText().trim();
+                String ageResStr = add_tf_ageRes.getText().trim();
+                int ageRes = 0;
+                if (!ageResStr.isEmpty()) {
+                    ageRes = Integer.parseInt(ageResStr);
+                }
+                else{
+                    ageRes = 0;
+                }
+                String dirAuth = add_tf_dirAuth.getText().trim();
+                String ISBN = add_tf_ISBN.getText().trim();
+                String Classification = add_tf_classification.getText().trim();
+                String location = add_tf_location.getText().trim();
+                String PubCountry = add_tf_pubCountry.getText().trim();
+
+                
+                int result = 0;
+                boolean wrongAgeRes = false;
+                boolean hasEmptyField = false;
+                if (title.isEmpty()) {
+                    hasEmptyField = true;
+                    add_lbl_title.setForeground(Color.red);
+                }
+                else {
+                    add_lbl_title.setForeground(Color.black);
+                }
+                if (dirAuth.isEmpty()) {
+                    hasEmptyField = true;
+                    add_lbl_DirAuth.setForeground(Color.red);
+                }
+                else {
+                    add_lbl_DirAuth.setForeground(Color.black);
+                }
+                if (Classification.isEmpty()) {
+                    hasEmptyField = true;
+                    add_lbl_classification.setForeground(Color.red);
+                }
+                else {
+                    add_lbl_classification.setForeground(Color.black);
+                }
+                if (location.isEmpty()) {
+                    hasEmptyField = true;
+                    add_lbl_Location.setForeground(Color.red);
+                }
+                else {
+                    add_lbl_Location.setForeground(Color.black);
+                }
+                if (PubCountry.isEmpty()) {
+                    hasEmptyField = true;
+                    add_lbl_PubCounty.setForeground(Color.red);
+                }
+                else {
+                    add_lbl_PubCounty.setForeground(Color.black);
+                }
+
+                if(hasEmptyField){
+                    JOptionPane.showMessageDialog(Admin_controll.this, "Please fill in required fields. (Title, Director/Author, Classification, Location, Publisher/Country)", "Error", JOptionPane.INFORMATION_MESSAGE);
+                }
+                
+                else{
+                    dbconn.add_new_item(add_tf_title, add_tf_dirAuth, add_tf_classification, add_tf_pubCountry, add_tf_ISBN, add_tf_ageRes, add_tf_actor, add_tf_location, add_cb_type, add_cb_maxLoan);
+
+                    result = JOptionPane.showConfirmDialog(Admin_controll.this, "Item added successfully, Do you want to add corresponding Item Copies", "Confirmation", JOptionPane.YES_NO_OPTION);
+                    add_tf_pubCountry.setText("");
+                    add_tf_location.setText("");
+                    add_tf_classification.setText("");
+                    add_tf_ISBN.setText("");
+                    add_tf_dirAuth.setText("");
+                    add_tf_ageRes.setText("");
+                    add_tf_actor.setText("");
+                    add_tf_title.setText("");
+                    add_lbl_ageres.setForeground(Color.BLACK);
+                    add_lbl_PubCounty.setForeground(Color.BLACK);
+                    add_lbl_Location.setForeground(Color.BLACK);
+                    add_lbl_classification.setForeground(Color.BLACK);
+                    add_lbl_DirAuth.setForeground(Color.BLACK);
+                    add_lbl_title.setForeground(Color.BLACK);
+                    manage_btn_search.doClick();
+                }
+
+                if (result == JOptionPane.YES_OPTION) {
+                    tabbedPane1.setSelectedIndex(13);
+                }
+            }
+        });
+        addCopy_btn_add.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                int RefrenceCopy;
+                int ItemID = dbconn.get_latest_itemID();
+                String Barcode = addCopy_tf_barcode.getText();
+
+                if(addCopy_cb_refCopy.isSelected()){
+                    RefrenceCopy = 1;
+                }
+                else{
+                    RefrenceCopy = 0;
+                }
+
+                dbconn.add_itemCopy(Barcode, ItemID, RefrenceCopy);
+
+                addCopy_tf_barcode.setText("");
             }
         });
         setVisible(true);

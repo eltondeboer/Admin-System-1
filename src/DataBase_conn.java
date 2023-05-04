@@ -750,4 +750,120 @@ DataBase_conn {
             e.printStackTrace();
         }
     }
+
+    public void add_new_item(JTextField title_tf,
+                             JTextField dir_auth_tf,
+                             JTextField classification_tf,
+                             JTextField publisher_tf,
+                             JTextField ISBN_tf,
+                             JTextField Age_restriction_tf,
+                             JTextField Actor_tf,
+                             JTextField Location_tf,
+                             JComboBox type_cb,
+                             JComboBox maxloan_cb){
+        String title = title_tf.getText();
+        String dir_auth = dir_auth_tf.getText();
+        String classification = classification_tf.getText();
+        String publisher = publisher_tf.getText();
+        String ISBN = ISBN_tf.getText();
+        String Actor = Actor_tf.getText();
+        String Location = Location_tf.getText();
+        String type = type_cb.getSelectedItem().toString();
+        int maxloan = Integer.parseInt(maxloan_cb.getSelectedItem().toString());
+        String ageResStr = Age_restriction_tf.getText();
+
+        int Age_restriction = 0;
+        if (!ageResStr.isEmpty()) {
+            Age_restriction = Integer.parseInt(ageResStr);
+        }
+        else{
+            Age_restriction = 0;
+        }
+
+        try{
+            Connection conn = DriverManager.getConnection(DB_URL, USERNAME, PASSWORD);
+
+            Statement stmt = conn.createStatement();
+            String sql = "INSERT INTO `library`.`item` (`Title`, `Type`, `Classification`, `Director_Author`, `Publisher_Country`, `Age_Restriction`, `Actor`, `Availability` , `ISBN`, `Location`, `MaxLoan_Weeks`) VALUES (?, ?, ?, ?, ?, ?, ?, 0, ?, ?, ?);";
+            PreparedStatement preparedStatement = conn.prepareStatement(sql);
+            preparedStatement.setString(1, title);
+            preparedStatement.setString(2, type);
+            preparedStatement.setString(3, classification);
+            preparedStatement.setString(4, dir_auth);
+            preparedStatement.setString(5, publisher);
+            preparedStatement.setInt(6, Age_restriction);
+            preparedStatement.setString(7, Actor);
+            preparedStatement.setString(8, ISBN);
+            preparedStatement.setString(9, Location);
+            preparedStatement.setInt(10, maxloan);
+
+            int rows_effected = preparedStatement.executeUpdate();
+            if (rows_effected == 0){
+                System.out.println("Failed to add new User");
+            }
+            else{
+                System.out.println("User added succesfully");
+            }
+
+            stmt.close();
+            conn.close();
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+    public int get_latest_itemID (){
+
+        try{
+            Connection conn = DriverManager.getConnection(DB_URL, USERNAME, PASSWORD);
+
+            Statement stmt = conn.createStatement();
+            String sql = "SELECT ItemID FROM library.item ORDER BY ItemID DESC LIMIT 1;";
+            PreparedStatement preparedStatement2 = conn.prepareStatement(sql);
+            ResultSet resultSet = preparedStatement2.executeQuery();
+
+            int ItemID = 0;
+            while (resultSet.next()) {
+                ItemID = resultSet.getInt("ItemID");
+            }
+
+            stmt.close();
+            conn.close();
+
+            return ItemID;
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            return 0;
+        }
+    }
+    public void add_itemCopy(String Barcode, int ItemID, int ReferenceCopy){
+
+
+        try{
+            Connection conn = DriverManager.getConnection(DB_URL, USERNAME, PASSWORD);
+
+            Statement stmt = conn.createStatement();
+            String sql = "INSERT INTO `library`.`item_copy` (`Barcode`, `IsReferenceCopy`, `ItemID`) VALUES (?, ?, ?);";
+            PreparedStatement preparedStatement = conn.prepareStatement(sql);
+            preparedStatement.setString(1, Barcode);
+            preparedStatement.setInt(2, ReferenceCopy);
+            preparedStatement.setInt(3, ItemID);
+
+            int rows_effected = preparedStatement.executeUpdate();
+            if (rows_effected == 0){
+                System.out.println("Failed to add new User");
+            }
+            else{
+                System.out.println("User added succesfully");
+            }
+
+            stmt.close();
+            conn.close();
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+    }
 }
