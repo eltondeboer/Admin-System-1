@@ -860,6 +860,7 @@ public class Admin_controll extends JDialog{
                     add_lbl_PubCounty.setText("Publisher");
                     add_lbl_isbn.setVisible(true);
                     add_tf_ISBN.setVisible(true);
+                    add_lbl_DirAuth.setText("Author");
                 }
                 else{
                     add_lbl_actor.setVisible(true);
@@ -869,6 +870,7 @@ public class Admin_controll extends JDialog{
                     add_lbl_PubCounty.setText("Country");
                     add_lbl_isbn.setVisible(false);
                     add_tf_ISBN.setVisible(false);
+                    add_lbl_DirAuth.setText("Director");
                 }
             }
         });
