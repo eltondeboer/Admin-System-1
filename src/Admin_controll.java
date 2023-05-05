@@ -8,7 +8,7 @@ import javax.swing.table.TableColumnModel;
 import java.awt.*;
 import java.awt.event.*;
 import java.net.URL;
-
+//This things are varibles that connect the code to the gui, and above are the imports
 public class Admin_controll extends JDialog{
     private JButton view_loans_btn;
     private JButton late_btn;
@@ -100,12 +100,18 @@ public class Admin_controll extends JDialog{
     private JLabel add_lbl_isbn;
     private JLabel add_lbl_Location;
     private JLabel add_lbl_maxLoan;
-    private JPanel add_item_copy;
+    private JPanel add_item_copy_after_item;
     private JTextField addCopy_tf_barcode;
     private JCheckBox addCopy_cb_refCopy;
     private JButton addCopy_btn_add;
+    private JButton item_copy_btn;
+    private JPanel add_only_item_copy;
+    private JTextField copy_tf_barcode;
+    private JTextField copy_tf_itemID;
+    private JCheckBox copy_CB_refCopy;
+    private JButton copy_btn_add;
 
-
+    //This funtion is used to set tha gui state when you are signed out
     public void signed_out_state() {
         view_loans_btn.setVisible(false);
         late_btn.setVisible(false);
@@ -113,11 +119,13 @@ public class Admin_controll extends JDialog{
         loan_btn.setVisible(false);
         reserveItem_btn.setVisible(false);
         manage_btn.setVisible(false);
+        item_copy_btn.setVisible(false);
         add_item_btn.setVisible(false);
         Admin_actions_label.setVisible(false);
         tfEmail.setText("");
         pfPassword.setText("");
     }
+    //This funtion is used to set tha gui state when you are signed in, and check if you are admin or not.
     public void signed_in_state(User user) {
         if (user.user_is_admin()){
             view_loans_btn.setVisible(true);
@@ -126,6 +134,7 @@ public class Admin_controll extends JDialog{
             loan_btn.setVisible(true);
             reserveItem_btn.setVisible(true);
             manage_btn.setVisible(true);
+            item_copy_btn.setVisible(true);
             add_item_btn.setVisible(true);
             Admin_actions_label.setVisible(true);
         }
@@ -138,9 +147,11 @@ public class Admin_controll extends JDialog{
             manage_btn.setVisible(false);
             add_item_btn.setVisible(false);
             Admin_actions_label.setVisible(false);
+            item_copy_btn.setVisible(false);
         }
 
     }
+    //Here we create the constructor for the admin controller, which controlls the whole ui.
     public Admin_controll (JFrame parent){
         super(parent);
         //Creates instant of user.
@@ -161,11 +172,12 @@ public class Admin_controll extends JDialog{
         URL iconURL = Admin_controll.class.getResource("/library.png");
         ImageIcon icon = new ImageIcon(iconURL);
         setIconImage(icon.getImage());
-
-        setMinimumSize(new Dimension(600, 500));
+        setMinimumSize(new Dimension(900, 700));
         setModal(true);
         setLocationRelativeTo(parent);
         setDefaultCloseOperation(DISPOSE_ON_CLOSE);
+
+        //This is a action listner for when the windoe closes the scheduler stops, and starts when it opens.
         addWindowListener(new WindowAdapter() {
             @Override
             public void windowClosing(WindowEvent e) {
@@ -208,6 +220,7 @@ public class Admin_controll extends JDialog{
                     signIn_btn.setText("Sign out");
                     tabbedPane1.setSelectedIndex(0);
                     signed_in_state(user1);
+                    //Sets the view_loans table to the table in the database for the user. So it shows on startup.
                     Jtble_View_Loans.setModel(dbconn.view_loans_table(user1));
                 }
                 else{
@@ -216,7 +229,7 @@ public class Admin_controll extends JDialog{
                 }
             }
         });
-
+        //When user presses view_loans_btn the view changes.
         view_loans_btn.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -228,10 +241,11 @@ public class Admin_controll extends JDialog{
             @Override
             public void actionPerformed(ActionEvent e) {
                 tabbedPane1.setSelectedIndex(1);
+                //Sets the late_returns table to the table in the database for the user.
                 u_late_returns_JTbl.setModel(dbconn.view_late_userReturns_table(user1));
             }
         });
-
+        //When user presses return_btn the view changes.
         return_btn.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -239,6 +253,7 @@ public class Admin_controll extends JDialog{
             }
         });
 
+        //Checks if user is already signed in or not, and changes the view accordingly.
         signIn_btn.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -265,31 +280,38 @@ public class Admin_controll extends JDialog{
                 }
             }
         });
+
+        //When user presses search_btn the view changes.
         loan_btn.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 tabbedPane1.setSelectedIndex(3);
             }
         });
+        //when user presses reserveItem_btn the view changes.
         reserveItem_btn.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 tabbedPane1.setSelectedIndex(11);
             }
         });
+        //when user presses manage_btn the view changes.
         manage_btn.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 tabbedPane1.setSelectedIndex(4);
             }
         });
+        //when user presses add_item_btn the view changes.
         add_item_btn.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
+                add_cb_type.getActionListeners()[0].actionPerformed(new ActionEvent(add_item_btn, ActionEvent.ACTION_PERFORMED, null));
                 tabbedPane1.setSelectedIndex(5);
             }
         });
 
+        //When user presses search the searchterm is grabbed and sent to the database to be searched for.
         search_btn.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -299,6 +321,8 @@ public class Admin_controll extends JDialog{
                 tf_searchbar.setText("");
             }
         });
+
+        //When user presses enter the corresponding button is clicked
         tf_searchbar.addKeyListener(new KeyAdapter() {
             @Override
             public void keyPressed(KeyEvent e) {
@@ -323,6 +347,8 @@ public class Admin_controll extends JDialog{
                 }
             }
         });
+
+        //Hides the searchbar when user is in the manage tab or the reserve tab.
         tabbedPane1.addChangeListener(new ChangeListener() {
             @Override
             public void stateChanged(ChangeEvent e) {
@@ -334,6 +360,8 @@ public class Admin_controll extends JDialog{
                 }
             }
         });
+
+        //When user presses the reserve button the view changes.
         reg_new_user_btn.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -473,6 +501,8 @@ public class Admin_controll extends JDialog{
                 }
             }
         });
+
+        //When user presses the return button the entered barcode gets checked and if it exists it gets returned.
         return_item_btn.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -487,6 +517,8 @@ public class Admin_controll extends JDialog{
                 return_bc_tf.setText("");
             }
         });
+
+        //Makes it posible to press enter intstead of the button.
         return_bc_tf.addKeyListener(new KeyAdapter() {
             @Override
             public void keyPressed(KeyEvent e) {
@@ -495,6 +527,8 @@ public class Admin_controll extends JDialog{
                 }
             }
         });
+
+        //Checks all loan condtions and the performs the loan.
         loan_item_btn.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -521,6 +555,7 @@ public class Admin_controll extends JDialog{
                 loan_BC_tf.setText("");
             }
         });
+        //Makes it posible to press enter intstead of the button.
         loan_BC_tf.addKeyListener(new KeyAdapter() {
             @Override
             public void keyPressed(KeyEvent e) {
@@ -529,6 +564,8 @@ public class Admin_controll extends JDialog{
                 }
             }
         });
+
+        //Searches for the entered searchterm and if it exists it gets displayed.
         manage_btn_search.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -546,6 +583,7 @@ public class Admin_controll extends JDialog{
 
             }
         });
+        //Makes it posible to press enter intstead of the button.
         manage_tf_search.addKeyListener(new KeyAdapter() {
             @Override
             public void keyPressed(KeyEvent e) {
@@ -554,6 +592,8 @@ public class Admin_controll extends JDialog{
                 }
             }
         });
+
+        //Pushes the edits to the database when user preses the button.
         pushEditsButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -592,6 +632,8 @@ public class Admin_controll extends JDialog{
                 }
             }
         });
+
+        //Deletes the selected row from the database.
         deleteSelectedButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -610,7 +652,6 @@ public class Admin_controll extends JDialog{
                         }
                     }
                 }
-
                 else if (selected.equals("item_copy")){
                     int result = JOptionPane.showConfirmDialog(Admin_controll.this, "Are you sure you want to delete item copy?", "Confirmation", JOptionPane.YES_NO_OPTION);
                     if (selectedRow != -1) {
@@ -624,7 +665,6 @@ public class Admin_controll extends JDialog{
                         }
                     }
                 }
-
                 else if (selected.equals("user")){
                     int result = JOptionPane.showConfirmDialog(Admin_controll.this, "Are you sure you want to delete user? OBS: Corresponding loans, and reservations will also be deleted", "Confirmation", JOptionPane.YES_NO_OPTION);
                     if (selectedRow != -1) {
@@ -641,6 +681,7 @@ public class Admin_controll extends JDialog{
             }
         });
 
+        //Adds the reservation to the database.
         reserve_BTN_search.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -654,6 +695,7 @@ public class Admin_controll extends JDialog{
 
             }
         });
+        //Makes it possible to search by pressing enter.
         reserve_tf_searchterm.addKeyListener(new KeyAdapter() {
             @Override
             public void keyPressed(KeyEvent e) {
@@ -662,6 +704,8 @@ public class Admin_controll extends JDialog{
                 }
             }
         });
+
+        //Adds the reservation to the database for the selected item.
         reserveSelectedButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -681,6 +725,7 @@ public class Admin_controll extends JDialog{
                 }
             }
         });
+        //Checks if fields are empty and informs the user through color and text, otherwise adds user to database through function
         add_btn_newitem.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -700,9 +745,8 @@ public class Admin_controll extends JDialog{
                 String location = add_tf_location.getText().trim();
                 String PubCountry = add_tf_pubCountry.getText().trim();
 
-                
+                boolean success = false;
                 int result = 0;
-                boolean wrongAgeRes = false;
                 boolean hasEmptyField = false;
                 if (title.isEmpty()) {
                     hasEmptyField = true;
@@ -742,27 +786,34 @@ public class Admin_controll extends JDialog{
 
                 if(hasEmptyField){
                     JOptionPane.showMessageDialog(Admin_controll.this, "Please fill in required fields. (Title, Director/Author, Classification, Location, Publisher/Country)", "Error", JOptionPane.INFORMATION_MESSAGE);
+                    return;
                 }
                 
                 else{
-                    dbconn.add_new_item(add_tf_title, add_tf_dirAuth, add_tf_classification, add_tf_pubCountry, add_tf_ISBN, add_tf_ageRes, add_tf_actor, add_tf_location, add_cb_type, add_cb_maxLoan);
+                    success = dbconn.add_new_item(add_tf_title, add_tf_dirAuth, add_tf_classification, add_tf_pubCountry, add_tf_ISBN, add_tf_ageRes, add_tf_actor, add_tf_location, add_cb_type, add_cb_maxLoan);
 
-                    result = JOptionPane.showConfirmDialog(Admin_controll.this, "Item added successfully, Do you want to add corresponding Item Copies", "Confirmation", JOptionPane.YES_NO_OPTION);
-                    add_tf_pubCountry.setText("");
-                    add_tf_location.setText("");
-                    add_tf_classification.setText("");
-                    add_tf_ISBN.setText("");
-                    add_tf_dirAuth.setText("");
-                    add_tf_ageRes.setText("");
-                    add_tf_actor.setText("");
-                    add_tf_title.setText("");
-                    add_lbl_ageres.setForeground(Color.BLACK);
-                    add_lbl_PubCounty.setForeground(Color.BLACK);
-                    add_lbl_Location.setForeground(Color.BLACK);
-                    add_lbl_classification.setForeground(Color.BLACK);
-                    add_lbl_DirAuth.setForeground(Color.BLACK);
-                    add_lbl_title.setForeground(Color.BLACK);
-                    manage_btn_search.doClick();
+                    if (success) {
+                        result = JOptionPane.showConfirmDialog(Admin_controll.this, "Item added successfully, Do you want to add corresponding Item Copies", "Confirmation", JOptionPane.YES_NO_OPTION);
+                        add_tf_pubCountry.setText("");
+                        add_tf_location.setText("");
+                        add_tf_classification.setText("");
+                        add_tf_ISBN.setText("");
+                        add_tf_dirAuth.setText("");
+                        add_tf_ageRes.setText("");
+                        add_tf_actor.setText("");
+                        add_tf_title.setText("");
+                        add_lbl_ageres.setForeground(Color.BLACK);
+                        add_lbl_PubCounty.setForeground(Color.BLACK);
+                        add_lbl_Location.setForeground(Color.BLACK);
+                        add_lbl_classification.setForeground(Color.BLACK);
+                        add_lbl_DirAuth.setForeground(Color.BLACK);
+                        add_lbl_title.setForeground(Color.BLACK);
+                        manage_btn_search.doClick();
+                    }
+                    else{
+                        JOptionPane.showMessageDialog(Admin_controll.this, "Something went wrong, try again later", "Error", JOptionPane.INFORMATION_MESSAGE);
+                    }
+
                 }
 
                 if (result == JOptionPane.YES_OPTION) {
@@ -776,6 +827,7 @@ public class Admin_controll extends JDialog{
                 int RefrenceCopy;
                 int ItemID = dbconn.get_latest_itemID();
                 String Barcode = addCopy_tf_barcode.getText();
+                boolean itemAdded = false;
 
                 if(addCopy_cb_refCopy.isSelected()){
                     RefrenceCopy = 1;
@@ -784,9 +836,71 @@ public class Admin_controll extends JDialog{
                     RefrenceCopy = 0;
                 }
 
-                dbconn.add_itemCopy(Barcode, ItemID, RefrenceCopy);
+                itemAdded = dbconn.add_itemCopy(Barcode, ItemID, RefrenceCopy);
 
-                addCopy_tf_barcode.setText("");
+                if (itemAdded) {
+                    addCopy_tf_barcode.setText("");
+                    JOptionPane.showMessageDialog(Admin_controll.this, "Item Copy added successfully", "Success", JOptionPane.INFORMATION_MESSAGE);
+                }
+                else{
+                    JOptionPane.showMessageDialog(Admin_controll.this, "Something went wrong, try again later", "Error", JOptionPane.INFORMATION_MESSAGE);
+                }
+            }
+        });
+        add_cb_type.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                if(add_cb_type.getSelectedItem().toString().equals("Book")){
+                    add_lbl_actor.setVisible(false);
+                    add_tf_actor.setVisible(false);
+                    add_lbl_ageres.setVisible(false);
+                    add_tf_ageRes.setVisible(false);
+                    add_lbl_PubCounty.setText("Publisher");
+                    add_lbl_isbn.setVisible(true);
+                    add_tf_ISBN.setVisible(true);
+                }
+                else{
+                    add_lbl_actor.setVisible(true);
+                    add_tf_actor.setVisible(true);
+                    add_lbl_ageres.setVisible(true);
+                    add_tf_ageRes.setVisible(true);
+                    add_lbl_PubCounty.setText("Country");
+                    add_lbl_isbn.setVisible(false);
+                    add_tf_ISBN.setVisible(false);
+                }
+            }
+        });
+        item_copy_btn.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                tabbedPane1.setSelectedIndex(14);
+            }
+        });
+        copy_btn_add.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                int RefrenceCopy;
+                int itemID = Integer.parseInt(copy_tf_itemID.getText());
+                boolean itemAdded = false;
+                String Barcode = copy_tf_barcode.getText();
+
+                if (copy_CB_refCopy.isSelected()) {
+                    RefrenceCopy = 1;
+                }
+                else{
+                    RefrenceCopy = 0;
+                }
+
+                itemAdded = dbconn.add_itemCopy(Barcode, itemID, RefrenceCopy);
+
+                if (itemAdded) {
+                    copy_tf_barcode.setText("");
+                    copy_tf_itemID.setText("");
+                    JOptionPane.showMessageDialog(Admin_controll.this, "Item Copy added successfully", "Success", JOptionPane.INFORMATION_MESSAGE);
+                }
+                else{
+                    JOptionPane.showMessageDialog(Admin_controll.this, "Something went wrong, try again later", "Error", JOptionPane.INFORMATION_MESSAGE);
+                }
             }
         });
         setVisible(true);

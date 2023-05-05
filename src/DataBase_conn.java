@@ -751,7 +751,7 @@ DataBase_conn {
         }
     }
 
-    public void add_new_item(JTextField title_tf,
+    public boolean add_new_item(JTextField title_tf,
                              JTextField dir_auth_tf,
                              JTextField classification_tf,
                              JTextField publisher_tf,
@@ -797,19 +797,15 @@ DataBase_conn {
             preparedStatement.setString(9, Location);
             preparedStatement.setInt(10, maxloan);
 
-            int rows_effected = preparedStatement.executeUpdate();
-            if (rows_effected == 0){
-                System.out.println("Failed to add new User");
-            }
-            else{
-                System.out.println("User added succesfully");
-            }
+            preparedStatement.executeUpdate();
 
             stmt.close();
             conn.close();
+            return true;
 
         } catch (Exception e) {
             e.printStackTrace();
+            return false;
         }
     }
     public int get_latest_itemID (){
@@ -837,7 +833,7 @@ DataBase_conn {
             return 0;
         }
     }
-    public void add_itemCopy(String Barcode, int ItemID, int ReferenceCopy){
+    public Boolean add_itemCopy(String Barcode, int ItemID, int ReferenceCopy){
 
 
         try{
@@ -861,8 +857,11 @@ DataBase_conn {
             stmt.close();
             conn.close();
 
+            return true;
+
         } catch (Exception e) {
             e.printStackTrace();
+            return false;
         }
 
     }
