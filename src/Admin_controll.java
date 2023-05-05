@@ -821,6 +821,7 @@ public class Admin_controll extends JDialog{
                 }
             }
         });
+        //Here you can add corresponding item copies to the item you just added.
         addCopy_btn_add.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -847,6 +848,7 @@ public class Admin_controll extends JDialog{
                 }
             }
         });
+        //Changes the fields depending on what type of item you want to add
         add_cb_type.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -870,6 +872,7 @@ public class Admin_controll extends JDialog{
                 }
             }
         });
+        //Changes the view to the add item copy tab
         item_copy_btn.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
