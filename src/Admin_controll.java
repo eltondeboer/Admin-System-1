@@ -881,6 +881,8 @@ public class Admin_controll extends JDialog{
                 tabbedPane1.setSelectedIndex(14);
             }
         });
+
+        //Allows you to add copies to a specific item
         copy_btn_add.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {

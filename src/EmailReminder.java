@@ -26,7 +26,7 @@ public class EmailReminder {
                     .startNow()
                     .build();
 
-            scheduler.scheduleJob(reminder_job, trigger);
+            scheduler.scheduleJob(reminder_job, trigger_now);
         } catch (SchedulerException e) {
             throw new RuntimeException(e);
         }
